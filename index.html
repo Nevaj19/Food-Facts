@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Lens · See what's really in your food</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f4efe6;
+  --bg-warm: #ede6d6;
+  --card: #fbf8f1;
+  --card-elev: #ffffff;
+  --ink: #1c1814;
+  --ink-soft: #6b6253;
+  --ink-faded: #a89e8a;
+  --line: #ddd3bf;
+  --line-soft: #e8e0cc;
+  --accent: #2f5e3f;
+  --accent-soft: #e6efe4;
+
+  --score-a: #1f8a3a;
+  --score-b: #7cb342;
+  --score-c: #f5b400;
+  --score-d: #ef7a00;
+  --score-e: #d62b1f;
+
+  --nova-1: #1f8a3a;
+  --nova-2: #7cb342;
+  --nova-3: #ef7a00;
+  --nova-4: #d62b1f;
+
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.4) 0, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.25) 0, transparent 35%);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Subtle paper grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.18  0 0 0 0 0.14  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: 64px 0 36px;
+}
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(46px, 7vw, 78px);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 50;
+  letter-spacing: -0.025em;
+  line-height: 0.96;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+header h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+header .tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--ink-soft);
+  max-width: 560px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+/* Ornament */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 28px auto 36px;
+  color: var(--ink-faded);
+}
+.ornament .rule {
+  height: 1px;
+  width: 60px;
+  background: var(--line);
+}
+.ornament .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Search */
+.search-wrap {
+  position: relative;
+  margin: 0 auto 20px;
+  max-width: 600px;
+}
+.search-input {
+  width: 100%;
+  padding: 20px 60px 20px 26px;
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 18px;
+  outline: none;
+  transition: all 0.25s ease;
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 20px rgba(28,24,20,0.04);
+}
+.search-input::placeholder { color: var(--ink-faded); font-weight: 400; }
+.search-input:focus {
+  border-color: var(--accent);
+  background: var(--card-elev);
+  box-shadow: 0 0 0 4px rgba(47,94,63,0.08), 0 6px 20px rgba(28,24,20,0.06);
+}
+.search-icon {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-faded);
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.suggestions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 56px;
+}
+.chip {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.18s ease;
+}
+.chip:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Intro cards */
+.intro {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+.intro-card {
+  background: var(--card);
+  padding: 26px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  transition: transform 0.2s;
+}
+.intro-card:hover { transform: translateY(-2px); }
+.intro-card .ic-num {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--accent);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 12px;
+  display: block;
+}
+.intro-card h3 {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.intro-card p {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--ink-soft);
+}
+.spinner {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loading p {
+  margin-top: 20px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Results grid */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.section-heading h2 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.section-heading .count {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-faded);
+  font-weight: 600;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 60px;
+}
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  display: flex;
+  flex-direction: column;
+}
+.result-card:hover {
+  transform: translateY(-3px);
+  background: var(--card-elev);
+  border-color: var(--accent);
+  box-shadow: 0 12px 32px rgba(28,24,20,0.07);
+}
+.result-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--bg-warm);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+.result-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+.result-brand {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.result-mini-scores {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+.mini-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  color: white;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Detail */
+.detail {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 40px;
+  border: 1px solid var(--line-soft);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 24px 60px rgba(28,24,20,0.06);
+}
+.back-btn {
+  background: none;
+  border: 1px solid var(--line);
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 28px;
+  color: var(--ink-soft);
+  transition: all 0.15s;
+}
+.back-btn:hover {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+.detail-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  margin-bottom: 36px;
+  align-items: start;
+}
+.detail-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--bg-warm);
+  border-radius: 16px;
+}
+.detail-cat {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-faded);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.detail-title h2 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.detail-brand {
+  color: var(--ink-soft);
+  font-size: 15px;
+  font-style: italic;
+  font-family: var(--serif);
+}
+
+/* Score row */
+.scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.score-card {
+  background: var(--bg);
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid var(--line-soft);
+}
+.score-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 11px;
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.score-desc {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+/* Section */
+.section {
+  margin-bottom: 32px;
+}
+.section h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.section h3::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* Health summary */
+.health-summary {
+  background: var(--accent-soft);
+  padding: 22px 26px;
+  border-radius: 14px;
+  border-left: 3px solid var(--accent);
+  margin-bottom: 32px;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-style: italic;
+}
+.health-summary strong {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* Nutrient levels */
+.nutrient-levels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.nutrient-bar {
+  background: var(--bg);
+  padding: 14px 16px;
+  border-radius: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--line-soft);
+}
+.nutrient-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.nutrient-amount {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.nutrient-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* Nutrition table */
+.nutrition-table {
+  background: var(--bg);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+}
+.nutrition-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14.5px;
+}
+.nutrition-row:last-child { border-bottom: none; }
+.nutrition-row.indent { padding-left: 38px; color: var(--ink-soft); font-size: 13.5px; }
+.nutrition-row.bold { font-weight: 600; }
+.nutrition-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 500; }
+
+/* Ingredients */
+.ingredients {
+  background: var(--bg);
+  padding: 20px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  border: 1px solid var(--line-soft);
+  font-family: var(--serif);
+}
+
+/* Additives & allergens */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  padding: 7px 13px;
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.tag.warn {
+  background: #fdf2dc;
+  border-color: #f0d28a;
+  color: #6e4c12;
+}
+.tag.danger {
+  background: #fde6e3;
+  border-color: #f0b3ab;
+  color: #7a1f17;
+}
+
+/* Empty / error states */
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--ink-soft);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 48px 0 36px;
+  color: var(--ink-faded);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+
+/* Mobile */
+@media (max-width: 720px) {
+  header { padding: 40px 0 24px; }
+  .intro { grid-template-columns: 1fr; }
+  .detail { padding: 24px; }
+  .detail-hero { grid-template-columns: 1fr; }
+  .detail-img { max-width: 220px; margin: 0 auto; }
+  .scores { grid-template-columns: 1fr; }
+  .nutrient-levels { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">A Field Guide to Your Food</div>
+    <h1>Food <em>Lens</em></h1>
+    <div class="ornament">
+      <span class="rule"></span>
+      <span class="dot"></span>
+      <span class="rule"></span>
+    </div>
+    <p class="tagline">Search any product to see how processed it is, how healthy it is, and exactly what's inside.</p>
+  </header>
+
+  <div class="search-wrap">
+    <input id="search" class="search-input" type="text" placeholder="Try “nutella”, “oat milk”, or a barcode…" autocomplete="off">
+    <span class="search-icon">⌕</span>
+  </div>
+
+  <div class="suggestions" id="suggestions">
+    <button class="chip" data-q="nutella">Nutella</button>
+    <button class="chip" data-q="coca cola">Coca Cola</button>
+    <button class="chip" data-q="oreo">Oreo</button>
+    <button class="chip" data-q="cheerios">Cheerios</button>
+    <button class="chip" data-q="greek yogurt">Greek Yogurt</button>
+    <button class="chip" data-q="almond milk">Almond Milk</button>
+  </div>
+
+  <div id="intro" class="intro">
+    <div class="intro-card">
+      <span class="ic-num">01</span>
+      <h3>Nutri-Score</h3>
+      <p>A graded letter from A to E that summarises overall nutritional quality — calories, sugar, salt, fat against fibre and protein.</p>
+    </div>
+    <div class="intro-card">
+      <span class="ic-num">02</span>
+      <h3>NOVA Group</h3>
+      <p>A 1–4 scale measuring how processed a food is. 1 means whole or minimally processed; 4 means ultra-processed.</p>
+    </div>
+    <div class="intro-card">
+      <span class="ic-num">03</span>
+      <h3>Eco-Score</h3>
+      <p>An environmental rating from A to E covering packaging, transport, farming methods, and carbon footprint.</p>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <footer>
+    <p>Data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> — a free, open, collaborative database of food products from around the world.</p>
+  </footer>
+
+</div>
+
+<script>
+const searchInput = document.getElementById('search');
+const output = document.getElementById('output');
+const intro = document.getElementById('intro');
+const suggestions = document.getElementById('suggestions');
+
+// Chip handlers
+document.querySelectorAll('.chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    searchInput.value = btn.dataset.q;
+    runSearch(btn.dataset.q);
+  });
+});
+
+let debounceTimer;
+searchInput.addEventListener('input', e => {
+  clearTimeout(debounceTimer);
+  const q = e.target.value.trim();
+  if (!q) {
+    output.innerHTML = '';
+    intro.style.display = 'grid';
+    suggestions.style.display = 'flex';
+    return;
+  }
+  debounceTimer = setTimeout(() => runSearch(q), 380);
+});
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    clearTimeout(debounceTimer);
+    const q = e.target.value.trim();
+    if (q) runSearch(q);
+  }
+});
+
+async function runSearch(query) {
+  intro.style.display = 'none';
+  suggestions.style.display = 'none';
+  output.innerHTML = `<div class="loading"><div class="spinner"></div><p>Searching the pantry…</p></div>`;
+
+  try {
+    let products = [];
+    if (/^\d{8,14}$/.test(query)) {
+      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${query}.json`);
+      const data = await res.json();
+      if (data.product) products = [data.product];
+    } else {
+      const fields = 'product_name,brands,image_front_small_url,image_front_url,nutrition_grade_fr,nova_group,ecoscore_grade,code';
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=12&fields=${fields}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      products = (data.products || []).filter(p => p.product_name && p.code);
+    }
+
+    if (products.length === 0) {
+      output.innerHTML = `<div class="empty">No products found. Try a different name or barcode.</div>`;
+      return;
+    }
+
+    if (products.length === 1) {
+      await showDetail(products[0].code);
+    } else {
+      renderResults(products, query);
+    }
+  } catch (err) {
+    output.innerHTML = `<div class="empty">Something went wrong: ${err.message}</div>`;
+  }
+}
+
+function renderResults(products, query) {
+  output.innerHTML = `
+    <div class="section-heading">
+      <h2>Results for “${escapeHtml(query)}”</h2>
+      <span class="count">${products.length} found</span>
+    </div>
+    <div class="results-grid fade-in">${products.map(p => `
+      <div class="result-card" data-code="${p.code}">
+        <img class="result-img" src="${p.image_front_small_url || p.image_front_url || placeholderImg()}" onerror="this.src='${placeholderImg()}'" alt="">
+        <div class="result-name">${escapeHtml(truncate(p.product_name, 50))}</div>
+        <div class="result-brand">${escapeHtml(truncate(p.brands || '—', 30))}</div>
+        <div class="result-mini-scores">
+          ${miniBadge('Nutri', p.nutrition_grade_fr, false)}
+          ${miniBadge('NOVA', p.nova_group, true)}
+          ${miniBadge('Eco', p.ecoscore_grade, false)}
+        </div>
+      </div>
+    `).join('')}</div>
+  `;
+  document.querySelectorAll('.result-card').forEach(card => {
+    card.addEventListener('click', () => showDetail(card.dataset.code));
+  });
+}
+
+function miniBadge(label, val, isNova) {
+  if (!val) return '';
+  const color = isNova ? novaColor(val) : scoreColor(val);
+  const display = isNova ? val : String(val).toUpperCase();
+  return `<span class="mini-badge" style="background:${color}">${label} ${display}</span>`;
+}
+
+function scoreColor(g) {
+  return { a: 'var(--score-a)', b: 'var(--score-b)', c: 'var(--score-c)', d: 'var(--score-d)', e: 'var(--score-e)' }[String(g).toLowerCase()] || '#999';
+}
+function novaColor(n) {
+  return { 1: 'var(--nova-1)', 2: 'var(--nova-2)', 3: 'var(--nova-3)', 4: 'var(--nova-4)' }[n] || '#999';
+}
+
+async function showDetail(barcode) {
+  output.innerHTML = `<div class="loading"><div class="spinner"></div><p>Reading the label…</p></div>`;
+  try {
+    const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
+    const data = await res.json();
+    if (!data.product) {
+      output.innerHTML = `<div class="empty">Product not found.</div>`;
+      return;
+    }
+    renderDetail(data.product);
+  } catch (err) {
+    output.innerHTML = `<div class="empty">Error loading: ${err.message}</div>`;
+  }
+}
+
+function renderDetail(p) {
+  const n = p.nutriments || {};
+  const nutri = p.nutrition_grade_fr;
+  const nova = p.nova_group;
+  const eco = p.ecoscore_grade;
+  const levels = p.nutrient_levels || {};
+
+  const levelKeys = [
+    ['fat', 'Fat', n.fat_100g],
+    ['saturated-fat', 'Saturated Fat', n['saturated-fat_100g']],
+    ['sugars', 'Sugars', n.sugars_100g],
+    ['salt', 'Salt', n.salt_100g],
+  ];
+
+  const summary = buildSummary(p);
+  const lastCat = (p.categories || '').split(',').slice(-1)[0].trim();
+
+  output.innerHTML = `
+    <div class="detail fade-in">
+      <button class="back-btn" id="backBtn">← Back</button>
+
+      <div class="detail-hero">
+        <img class="detail-img" src="${p.image_front_url || placeholderImg()}" onerror="this.src='${placeholderImg()}'" alt="">
+        <div class="detail-title">
+          ${lastCat ? `<div class="detail-cat">${escapeHtml(lastCat)}</div>` : ''}
+          <h2>${escapeHtml(p.product_name || 'Unknown Product')}</h2>
+          ${p.brands ? `<div class="detail-brand">by ${escapeHtml(p.brands)}</div>` : ''}
+        </div>
+      </div>
+
+      <div class="scores">
+        ${scoreCard('Nutri-Score', nutri, nutriDesc(nutri), false)}
+        ${scoreCard('NOVA Group', nova, novaDesc(nova), true)}
+        ${scoreCard('Eco-Score', eco, ecoDesc(eco), false)}
+      </div>
+
+      <div class="health-summary">${summary}</div>
+
+      ${levelKeys.some(k => levels[k[0]]) ? `
+      <div class="section">
+        <h3>Nutrient Levels</h3>
+        <div class="nutrient-levels">
+          ${levelKeys.filter(k => levels[k[0]]).map(([key, label, val]) => `
+            <div class="nutrient-bar">
+              <div>
+                <span class="nutrient-name">${label}</span>
+                <span class="nutrient-tag" style="background:${levelColor(levels[key])}">${levels[key]}</span>
+              </div>
+              <span class="nutrient-amount">${val != null ? val.toFixed(1) + ' g' : '—'}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+      <div class="section">
+        <h3>Nutrition Facts <span style="font-size:11px;font-family:var(--sans);font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-faded);font-style:normal">per 100g</span></h3>
+        <div class="nutrition-table">
+          ${nutritionRow('Energy', n['energy-kcal_100g'] != null ? n['energy-kcal_100g'].toFixed(0) + ' kcal' : null, true)}
+          ${nutritionRow('Fat', n.fat_100g != null ? n.fat_100g.toFixed(1) + ' g' : null, true)}
+          ${nutritionRow('— Saturated', n['saturated-fat_100g'] != null ? n['saturated-fat_100g'].toFixed(1) + ' g' : null, false, true)}
+          ${nutritionRow('Carbohydrates', n.carbohydrates_100g != null ? n.carbohydrates_100g.toFixed(1) + ' g' : null, true)}
+          ${nutritionRow('— Sugars', n.sugars_100g != null ? n.sugars_100g.toFixed(1) + ' g' : null, false, true)}
+          ${nutritionRow('Fibre', n.fiber_100g != null ? n.fiber_100g.toFixed(1) + ' g' : null)}
+          ${nutritionRow('Protein', n.proteins_100g != null ? n.proteins_100g.toFixed(1) + ' g' : null, true)}
+          ${nutritionRow('Salt', n.salt_100g != null ? n.salt_100g.toFixed(2) + ' g' : null, true)}
+          ${nutritionRow('— Sodium', n.sodium_100g != null ? (n.sodium_100g * 1000).toFixed(0) + ' mg' : null, false, true)}
+        </div>
+      </div>
+
+      ${p.ingredients_text ? `
+      <div class="section">
+        <h3>Ingredients</h3>
+        <div class="ingredients">${escapeHtml(p.ingredients_text)}</div>
+      </div>` : ''}
+
+      ${(p.additives_tags && p.additives_tags.length) ? `
+      <div class="section">
+        <h3>Additives <span style="font-size:11px;font-family:var(--sans);font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-faded);font-style:normal">${p.additives_tags.length} found</span></h3>
+        <div class="tags">
+          ${p.additives_tags.map(t => `<span class="tag warn">${escapeHtml(t.replace('en:', '').toUpperCase())}</span>`).join('')}
+        </div>
+      </div>` : ''}
+
+      ${(p.allergens_tags && p.allergens_tags.length) ? `
+      <div class="section">
+        <h3>Allergens</h3>
+        <div class="tags">
+          ${p.allergens_tags.map(t => `<span class="tag danger">${escapeHtml(t.replace('en:', '').replace(/-/g, ' '))}</span>`).join('')}
+        </div>
+      </div>` : ''}
+
+      <div style="text-align:center; padding-top:8px; font-size:12px; color:var(--ink-faded); letter-spacing:0.04em">
+        Barcode: ${p.code || '—'}
+      </div>
+    </div>
+  `;
+  document.getElementById('backBtn').addEventListener('click', goBack);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nutritionRow(label, value, bold = false, indent = false) {
+  if (value == null) return '';
+  return `<div class="nutrition-row ${bold ? 'bold' : ''} ${indent ? 'indent' : ''}">
+    <span>${label}</span><span>${value}</span>
+  </div>`;
+}
+
+function scoreCard(label, val, desc, isNova) {
+  if (!val) return `<div class="score-card">
+    <div class="score-label">${label}</div>
+    <div class="score-badge" style="background:var(--ink-faded)">?</div>
+    <div class="score-desc">Not available</div>
+  </div>`;
+  const color = isNova ? novaColor(val) : scoreColor(val);
+  const display = isNova ? val : String(val).toUpperCase();
+  return `<div class="score-card">
+    <div class="score-label">${label}</div>
+    <div class="score-badge" style="background:${color}">${display}</div>
+    <div class="score-desc">${desc}</div>
+  </div>`;
+}
+
+function nutriDesc(g) {
+  return {
+    a: 'Excellent nutritional quality',
+    b: 'Good nutritional quality',
+    c: 'Average nutritional quality',
+    d: 'Poor nutritional quality',
+    e: 'Bad nutritional quality',
+  }[String(g).toLowerCase()] || '';
+}
+function novaDesc(n) {
+  return {
+    1: 'Unprocessed or minimally processed',
+    2: 'Processed culinary ingredient',
+    3: 'Processed food',
+    4: 'Ultra-processed food',
+  }[n] || '';
+}
+function ecoDesc(g) {
+  return {
+    a: 'Very low environmental impact',
+    b: 'Low environmental impact',
+    c: 'Moderate environmental impact',
+    d: 'High environmental impact',
+    e: 'Very high environmental impact',
+  }[String(g).toLowerCase()] || '';
+}
+function levelColor(level) {
+  return { low: 'var(--score-a)', moderate: 'var(--score-c)', high: 'var(--score-e)' }[level] || '#999';
+}
+
+function buildSummary(p) {
+  const parts = [];
+  const nutri = String(p.nutrition_grade_fr || '').toLowerCase();
+  const nova = p.nova_group;
+  const additives = (p.additives_tags || []).length;
+
+  if (nutri === 'a' || nutri === 'b') parts.push(`This food has <strong>good nutritional quality</strong>.`);
+  else if (nutri === 'c') parts.push(`This food has <strong>average nutritional quality</strong>.`);
+  else if (nutri === 'd' || nutri === 'e') parts.push(`This food has <strong>poor nutritional quality</strong>.`);
+
+  if (nova === 4) {
+    parts.push(`It's <strong>ultra-processed</strong>${additives ? ` with ${additives} additive${additives > 1 ? 's' : ''}` : ''} — best enjoyed occasionally.`);
+  } else if (nova === 3) {
+    parts.push(`It's a <strong>processed food</strong>.`);
+  } else if (nova === 1) {
+    parts.push(`It's <strong>unprocessed or minimally processed</strong> — generally a good choice.`);
+  } else if (nova === 2) {
+    parts.push(`It's a <strong>culinary ingredient</strong> used in cooking.`);
+  }
+
+  return parts.length ? parts.join(' ') : 'Browse the details below to learn more about this food.';
+}
+
+function goBack() {
+  const q = searchInput.value.trim();
+  if (q) runSearch(q);
+  else {
+    output.innerHTML = '';
+    intro.style.display = 'grid';
+    suggestions.style.display = 'flex';
+  }
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+function truncate(str, n) {
+  if (!str) return '';
+  return str.length > n ? str.slice(0, n - 1) + '…' : str;
+}
+function placeholderImg() {
+  return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23ede6d6"/><text x="100" y="105" text-anchor="middle" fill="%23a89e8a" font-family="Georgia,serif" font-style="italic" font-size="14">no image</text></svg>';
+}
+</script>
+</body>
+</html>
