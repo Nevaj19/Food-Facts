@@ -34,6 +34,11 @@
   --nova-3: #ef7a00;
   --nova-4: #d62b1f;
 
+  --risk-safe: #1f8a3a;
+  --risk-caution: #f5b400;
+  --risk-concern: #ef7a00;
+  --risk-avoid: #d62b1f;
+
   --serif: "Fraunces", Georgia, serif;
   --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -52,7 +57,6 @@ body {
   min-height: 100vh;
 }
 
-/* Subtle paper grain */
 body::before {
   content: "";
   position: fixed;
@@ -67,15 +71,105 @@ body::before {
 .container {
   position: relative;
   z-index: 1;
-  max-width: 1040px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 28px;
 }
 
+/* Top bar */
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding: 18px 0 0;
+}
+.settings-btn {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 8px 14px;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.18s;
+}
+.settings-btn:hover { background: var(--ink); color: white; border-color: var(--ink); }
+.settings-btn .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--risk-avoid); }
+.settings-btn.connected .dot { background: var(--risk-safe); }
+
+.settings-panel {
+  position: relative;
+  z-index: 2;
+  background: var(--card-elev);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 14px 0 0;
+  display: none;
+  box-shadow: 0 8px 30px rgba(28,24,20,0.06);
+}
+.settings-panel.open { display: block; }
+.settings-panel h4 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.settings-panel p {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.settings-panel p a { color: var(--accent); text-decoration: underline; }
+.api-key-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 9px;
+  outline: none;
+  color: var(--ink);
+}
+.api-key-input:focus { border-color: var(--accent); }
+.settings-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn-save {
+  padding: 11px 18px;
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-save:hover { background: var(--accent); }
+.settings-status {
+  font-size: 12px;
+  margin-top: 10px;
+  font-family: var(--serif);
+  font-style: italic;
+}
+.settings-status.ok { color: var(--risk-safe); }
+.settings-status.err { color: var(--risk-avoid); }
+
 /* Header */
 header {
   text-align: center;
-  padding: 64px 0 36px;
+  padding: 40px 0 36px;
 }
 .eyebrow {
   font-size: 11px;
@@ -105,12 +199,11 @@ header .tagline {
   font-style: italic;
   font-size: 19px;
   color: var(--ink-soft);
-  max-width: 560px;
+  max-width: 580px;
   margin: 0 auto;
   font-weight: 400;
 }
 
-/* Ornament */
 .ornament {
   display: flex;
   align-items: center;
@@ -119,23 +212,14 @@ header .tagline {
   margin: 28px auto 36px;
   color: var(--ink-faded);
 }
-.ornament .rule {
-  height: 1px;
-  width: 60px;
-  background: var(--line);
-}
-.ornament .dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-}
+.ornament .rule { height: 1px; width: 60px; background: var(--line); }
+.ornament .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 
 /* Search */
 .search-wrap {
   position: relative;
   margin: 0 auto 20px;
-  max-width: 600px;
+  max-width: 620px;
 }
 .search-input {
   width: 100%;
@@ -193,7 +277,7 @@ header .tagline {
   transform: translateY(-1px);
 }
 
-/* Intro cards */
+/* Intro */
 .intro {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -254,7 +338,7 @@ header .tagline {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Results grid */
+/* Results */
 .section-heading {
   display: flex;
   align-items: baseline;
@@ -275,6 +359,42 @@ header .tagline {
   font-weight: 600;
 }
 
+.source-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0;
+}
+.source-tab {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-soft);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.18s;
+}
+.source-tab:hover { color: var(--ink); }
+.source-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.source-tab .badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: var(--bg-warm);
+  padding: 2px 7px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -290,6 +410,7 @@ header .tagline {
   transition: all 0.22s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .result-card:hover {
   transform: translateY(-3px);
@@ -297,6 +418,22 @@ header .tagline {
   border-color: var(--accent);
   box-shadow: 0 12px 32px rgba(28,24,20,0.07);
 }
+.source-pill {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--ink);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  z-index: 1;
+}
+.source-pill.usda { background: #1f5e3d; }
+.source-pill.off { background: #4a3a1f; }
 .result-img {
   width: 100%;
   aspect-ratio: 1;
@@ -358,11 +495,7 @@ header .tagline {
   color: var(--ink-soft);
   transition: all 0.15s;
 }
-.back-btn:hover {
-  background: var(--ink);
-  color: white;
-  border-color: var(--ink);
-}
+.back-btn:hover { background: var(--ink); color: white; border-color: var(--ink); }
 .detail-hero {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -400,6 +533,54 @@ header .tagline {
   font-family: var(--serif);
 }
 
+/* Combined Food Lens Score */
+.lens-score {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--ink);
+  color: white;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.lens-score-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.15);
+}
+.lens-score-info {
+  flex: 1;
+}
+.lens-score-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.lens-score-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.lens-score-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.5;
+}
+
 /* Score row */
 .scores {
   display: grid;
@@ -435,16 +616,10 @@ header .tagline {
   margin-bottom: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.score-desc {
-  font-size: 12.5px;
-  color: var(--ink-soft);
-  line-height: 1.45;
-}
+.score-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
 
 /* Section */
-.section {
-  margin-bottom: 32px;
-}
+.section { margin-bottom: 32px; }
 .section h3 {
   font-family: var(--serif);
   font-size: 20px;
@@ -461,6 +636,15 @@ header .tagline {
   height: 1px;
   background: var(--line);
 }
+.section h3 .meta {
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-faded);
+  font-style: normal;
+}
 
 /* Health summary */
 .health-summary {
@@ -475,11 +659,7 @@ header .tagline {
   color: var(--ink);
   font-style: italic;
 }
-.health-summary strong {
-  font-weight: 600;
-  font-style: normal;
-  color: var(--accent);
-}
+.health-summary strong { font-weight: 600; font-style: normal; color: var(--accent); }
 
 /* Nutrient levels */
 .nutrient-levels {
@@ -496,15 +676,8 @@ header .tagline {
   align-items: center;
   border: 1px solid var(--line-soft);
 }
-.nutrient-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-.nutrient-amount {
-  font-size: 13px;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
+.nutrient-name { font-size: 14px; font-weight: 500; }
+.nutrient-amount { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .nutrient-tag {
   font-size: 10px;
   font-weight: 700;
@@ -517,7 +690,44 @@ header .tagline {
   display: inline-block;
 }
 
-/* Nutrition table */
+/* Nutrient sections */
+.nutrient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 8px;
+}
+.n-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.n-item:hover { background: var(--card-elev); }
+.n-name { color: var(--ink); }
+.n-value { color: var(--ink-soft); font-variant-numeric: tabular-nums; font-weight: 500; }
+.n-dv {
+  font-size: 11px;
+  color: var(--ink-faded);
+  font-weight: 600;
+  background: var(--card);
+  padding: 2px 7px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  min-width: 44px;
+  text-align: center;
+}
+.n-dv.high { color: var(--risk-safe); background: rgba(31,138,58,0.1); }
+.n-dv.med { color: var(--risk-caution); background: rgba(245,180,0,0.12); }
+
+/* Nutrition table (macros) */
 .nutrition-table {
   background: var(--bg);
   border-radius: 14px;
@@ -526,7 +736,8 @@ header .tagline {
 }
 .nutrition-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
   padding: 12px 20px;
   border-bottom: 1px solid var(--line-soft);
   font-size: 14.5px;
@@ -534,7 +745,67 @@ header .tagline {
 .nutrition-row:last-child { border-bottom: none; }
 .nutrition-row.indent { padding-left: 38px; color: var(--ink-soft); font-size: 13.5px; }
 .nutrition-row.bold { font-weight: 600; }
-.nutrition-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 500; }
+.nutrition-row .val { font-variant-numeric: tabular-nums; font-weight: 500; text-align: right; }
+.nutrition-row .dv {
+  font-size: 11px;
+  color: var(--ink-faded);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  align-self: center;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* GI / extras card */
+.gi-card {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid var(--line-soft);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 22px;
+  align-items: center;
+}
+.gi-meter {
+  text-align: center;
+}
+.gi-num {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.gi-num.low { color: var(--risk-safe); }
+.gi-num.med { color: var(--risk-caution); }
+.gi-num.high { color: var(--risk-avoid); }
+.gi-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+.gi-info h4 { font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.gi-info p { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+
+/* Labels */
+.labels-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.label-tag {
+  padding: 8px 14px;
+  background: var(--accent-soft);
+  border: 1px solid #c8dcc4;
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: capitalize;
+}
 
 /* Ingredients */
 .ingredients {
@@ -547,12 +818,85 @@ header .tagline {
   font-family: var(--serif);
 }
 
-/* Additives & allergens */
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+/* Additives — risk-based cards */
+.additive-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
 }
+.additive-card {
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--ink-faded);
+  border-radius: 11px;
+  padding: 14px 16px;
+}
+.additive-card.safe { border-left-color: var(--risk-safe); }
+.additive-card.caution { border-left-color: var(--risk-caution); }
+.additive-card.concern { border-left-color: var(--risk-concern); }
+.additive-card.avoid { border-left-color: var(--risk-avoid); background: #fdebe6; }
+.additive-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.additive-name {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.2;
+}
+.additive-code { font-size: 11px; color: var(--ink-faded); font-weight: 600; letter-spacing: 0.05em; }
+.additive-fn { font-size: 12px; color: var(--ink-soft); font-style: italic; margin-bottom: 8px; }
+.additive-risk {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.additive-risk.safe { background: var(--risk-safe); }
+.additive-risk.caution { background: var(--risk-caution); }
+.additive-risk.concern { background: var(--risk-concern); }
+.additive-risk.avoid { background: var(--risk-avoid); }
+.additive-risk.unknown { background: var(--ink-faded); }
+.additive-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+
+/* Eco details */
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+.eco-card {
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.eco-card-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-faded);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.eco-card-value {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.eco-card-sub { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag {
   padding: 7px 13px;
   background: var(--bg);
@@ -562,16 +906,8 @@ header .tagline {
   color: var(--ink);
   font-weight: 500;
 }
-.tag.warn {
-  background: #fdf2dc;
-  border-color: #f0d28a;
-  color: #6e4c12;
-}
-.tag.danger {
-  background: #fde6e3;
-  border-color: #f0b3ab;
-  color: #7a1f17;
-}
+.tag.warn { background: #fdf2dc; border-color: #f0d28a; color: #6e4c12; }
+.tag.danger { background: #fde6e3; border-color: #f0b3ab; color: #7a1f17; }
 
 /* Empty / error states */
 .empty {
@@ -593,6 +929,7 @@ footer {
 }
 footer a { color: var(--accent); text-decoration: none; }
 footer a:hover { text-decoration: underline; }
+footer .sources { margin-top: 6px; }
 
 /* Animations */
 @keyframes fadeIn {
@@ -603,18 +940,36 @@ footer a:hover { text-decoration: underline; }
 
 /* Mobile */
 @media (max-width: 720px) {
-  header { padding: 40px 0 24px; }
+  header { padding: 24px 0; }
   .intro { grid-template-columns: 1fr; }
   .detail { padding: 24px; }
   .detail-hero { grid-template-columns: 1fr; }
   .detail-img { max-width: 220px; margin: 0 auto; }
   .scores { grid-template-columns: 1fr; }
   .nutrient-levels { grid-template-columns: 1fr; }
+  .lens-score { flex-direction: column; align-items: flex-start; text-align: left; }
+  .gi-card { grid-template-columns: 1fr; text-align: center; gap: 14px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
+
+  <div class="topbar">
+    <button id="settingsBtn" class="settings-btn">
+      <span class="dot"></span>
+      <span>USDA API</span>
+    </button>
+  </div>
+  <div id="settingsPanel" class="settings-panel">
+    <h4>USDA FoodData Central API key</h4>
+    <p>Unlocks whole-food data, full vitamin &amp; mineral profiles, fatty acids, and amino acids. <a href="https://fdc.nal.usda.gov/api-key-signup.html" target="_blank" rel="noopener">Get a free key</a> (30 seconds).</p>
+    <div class="settings-row">
+      <input id="apiKey" class="api-key-input" type="password" placeholder="Paste your USDA API key…" autocomplete="off">
+      <button id="saveKeyBtn" class="btn-save">Save</button>
+    </div>
+    <div id="settingsStatus" class="settings-status"></div>
+  </div>
 
   <header>
     <div class="eyebrow">A Field Guide to Your Food</div>
@@ -624,140 +979,428 @@ footer a:hover { text-decoration: underline; }
       <span class="dot"></span>
       <span class="rule"></span>
     </div>
-    <p class="tagline">Search any product to see how processed it is, how healthy it is, and exactly what's inside.</p>
+    <p class="tagline">Search any food to see exactly what's inside — nutrients, additives, processing, environmental impact.</p>
   </header>
 
   <div class="search-wrap">
-    <input id="search" class="search-input" type="text" placeholder="Try “nutella”, “oat milk”, or a barcode…" autocomplete="off">
+    <input id="search" class="search-input" type="text" placeholder="Try "broccoli", "nutella", or a barcode…" autocomplete="off">
     <span class="search-icon">⌕</span>
   </div>
 
   <div class="suggestions" id="suggestions">
     <button class="chip" data-q="nutella">Nutella</button>
-    <button class="chip" data-q="coca cola">Coca Cola</button>
+    <button class="chip" data-q="broccoli">Broccoli</button>
+    <button class="chip" data-q="salmon">Salmon</button>
     <button class="chip" data-q="oreo">Oreo</button>
-    <button class="chip" data-q="cheerios">Cheerios</button>
     <button class="chip" data-q="greek yogurt">Greek Yogurt</button>
+    <button class="chip" data-q="oats">Oats</button>
     <button class="chip" data-q="almond milk">Almond Milk</button>
   </div>
 
   <div id="intro" class="intro">
     <div class="intro-card">
       <span class="ic-num">01</span>
-      <h3>Nutri-Score</h3>
-      <p>A graded letter from A to E that summarises overall nutritional quality — calories, sugar, salt, fat against fibre and protein.</p>
+      <h3>Health Scores</h3>
+      <p>Nutri-Score, NOVA processing rating, and our combined Food Lens score for an at-a-glance assessment.</p>
     </div>
     <div class="intro-card">
       <span class="ic-num">02</span>
-      <h3>NOVA Group</h3>
-      <p>A 1–4 scale measuring how processed a food is. 1 means whole or minimally processed; 4 means ultra-processed.</p>
+      <h3>Full Nutrient Profile</h3>
+      <p>Macros, vitamins, minerals, amino acids, and fatty acids — with % Daily Values calculated for you.</p>
     </div>
     <div class="intro-card">
       <span class="ic-num">03</span>
-      <h3>Eco-Score</h3>
-      <p>An environmental rating from A to E covering packaging, transport, farming methods, and carbon footprint.</p>
+      <h3>Additive Analysis</h3>
+      <p>Every additive flagged with a risk level based on EFSA, FDA, and IARC findings — not just the E-number.</p>
     </div>
   </div>
 
   <div id="output"></div>
 
   <footer>
-    <p>Data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> — a free, open, collaborative database of food products from around the world.</p>
+    <p class="sources">Data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> &middot; <a href="https://fdc.nal.usda.gov/" target="_blank" rel="noopener">USDA FoodData Central</a></p>
+    <p style="margin-top:8px;font-size:11px;">Additive notes synthesized from EFSA, FDA, and IARC. Educational use — not medical advice.</p>
   </footer>
 
 </div>
 
 <script>
-const searchInput = document.getElementById('search');
-const output = document.getElementById('output');
-const intro = document.getElementById('intro');
-const suggestions = document.getElementById('suggestions');
+/* =====================================================
+   DATA: % Daily Values (FDA, 2016 update, 2000 kcal diet)
+   ===================================================== */
+const DV = {
+  // macros (g)
+  fat_g: 78, sat_fat_g: 20, trans_fat_g: 0, cholesterol_mg: 300, sodium_mg: 2300,
+  carbs_g: 275, fiber_g: 28, sugar_added_g: 50, protein_g: 50,
+  // vitamins
+  vit_a_mcg: 900, vit_c_mg: 90, vit_d_mcg: 20, vit_e_mg: 15, vit_k_mcg: 120,
+  thiamin_mg: 1.2, riboflavin_mg: 1.3, niacin_mg: 16, vit_b6_mg: 1.7,
+  folate_mcg: 400, vit_b12_mcg: 2.4, biotin_mcg: 30, pantothenic_mg: 5, choline_mg: 550,
+  // minerals
+  calcium_mg: 1300, iron_mg: 18, magnesium_mg: 420, phosphorus_mg: 1250,
+  potassium_mg: 4700, zinc_mg: 11, copper_mg: 0.9, manganese_mg: 2.3,
+  selenium_mcg: 55, iodine_mcg: 150, chromium_mcg: 35, molybdenum_mcg: 45,
+};
 
-// Chip handlers
-document.querySelectorAll('.chip').forEach(btn => {
-  btn.addEventListener('click', () => {
-    searchInput.value = btn.dataset.q;
-    runSearch(btn.dataset.q);
-  });
+/* =====================================================
+   DATA: Additive risk database (E-numbers)
+   Synthesised from EFSA, FDA, IARC, JECFA published findings.
+   ===================================================== */
+const ADDITIVES = {
+  // Colourings
+  'e100':  { name: 'Curcumin', fn: 'Yellow colour from turmeric', risk: 'safe', note: 'Natural pigment, considered safe at typical food levels.' },
+  'e101':  { name: 'Riboflavin (B2)', fn: 'Yellow colour / vitamin', risk: 'safe', note: 'Vitamin B2 — actually beneficial.' },
+  'e102':  { name: 'Tartrazine', fn: 'Synthetic yellow dye', risk: 'concern', note: 'Linked to hyperactivity in children (Southampton study); requires warning label in EU.' },
+  'e104':  { name: 'Quinoline Yellow', fn: 'Synthetic yellow dye', risk: 'concern', note: 'Requires hyperactivity warning label in EU; banned in some countries.' },
+  'e110':  { name: 'Sunset Yellow', fn: 'Synthetic orange dye', risk: 'concern', note: 'Hyperactivity warning required in EU; allergic reactions in sensitive people.' },
+  'e120':  { name: 'Cochineal / Carmine', fn: 'Red colour from insects', risk: 'caution', note: 'Natural but can trigger severe allergic reactions; not vegan.' },
+  'e122':  { name: 'Carmoisine (Azorubine)', fn: 'Synthetic red dye', risk: 'concern', note: 'EU hyperactivity warning required; banned in US, Norway, Sweden.' },
+  'e124':  { name: 'Ponceau 4R', fn: 'Synthetic red dye', risk: 'concern', note: 'Banned in US and Norway; hyperactivity warning in EU.' },
+  'e127':  { name: 'Erythrosine', fn: 'Synthetic red dye', risk: 'concern', note: 'Banned by FDA in cosmetics; thyroid concerns in animal studies.' },
+  'e129':  { name: 'Allura Red AC', fn: 'Synthetic red dye', risk: 'concern', note: 'EU hyperactivity warning required; possible link to gut inflammation.' },
+  'e131':  { name: 'Patent Blue V', fn: 'Synthetic blue dye', risk: 'caution', note: 'Anaphylaxis risk in rare cases; banned in US and Australia.' },
+  'e133':  { name: 'Brilliant Blue FCF', fn: 'Synthetic blue dye', risk: 'caution', note: 'Generally considered safe; banned in several European countries historically.' },
+  'e150a': { name: 'Plain Caramel', fn: 'Brown colour', risk: 'safe', note: 'Simply burnt sugar; considered safe.' },
+  'e150c': { name: 'Ammonia Caramel', fn: 'Brown colour', risk: 'caution', note: 'Made with ammonia; generally safe at food levels.' },
+  'e150d': { name: 'Sulphite Ammonia Caramel', fn: 'Brown colour (colas)', risk: 'concern', note: 'Contains 4-MEI, classified by IARC as possibly carcinogenic; common in cola drinks.' },
+  'e160a': { name: 'Beta-carotene', fn: 'Orange colour / pro-vitamin A', risk: 'safe', note: 'Natural carotenoid; converts to vitamin A.' },
+  'e163':  { name: 'Anthocyanins', fn: 'Purple/red colour', risk: 'safe', note: 'Natural antioxidants from fruits and vegetables.' },
+  'e171':  { name: 'Titanium Dioxide', fn: 'White colour', risk: 'avoid', note: 'Banned as food additive in EU since 2022 over genotoxicity concerns; still permitted in US/UK.' },
+  'e172':  { name: 'Iron oxides', fn: 'Brown/red colour', risk: 'safe', note: 'Considered safe.' },
+
+  // Preservatives
+  'e200':  { name: 'Sorbic acid', fn: 'Preservative', risk: 'safe', note: 'Generally well-tolerated.' },
+  'e202':  { name: 'Potassium sorbate', fn: 'Preservative', risk: 'safe', note: 'Generally safe; rare skin irritation.' },
+  'e210':  { name: 'Benzoic acid', fn: 'Preservative', risk: 'caution', note: 'Can form benzene (a carcinogen) when combined with vitamin C.' },
+  'e211':  { name: 'Sodium benzoate', fn: 'Preservative', risk: 'caution', note: 'Can form benzene with vitamin C; linked to hyperactivity in studies.' },
+  'e220':  { name: 'Sulphur dioxide', fn: 'Preservative / antioxidant', risk: 'caution', note: 'Common asthma trigger; must be declared as allergen.' },
+  'e223':  { name: 'Sodium metabisulphite', fn: 'Preservative', risk: 'caution', note: 'Sulphite — asthma trigger in sensitive people.' },
+  'e249':  { name: 'Potassium nitrite', fn: 'Cured-meat preservative', risk: 'avoid', note: 'Nitrites in processed meat form nitrosamines (IARC Group 1 carcinogen for processed meat).' },
+  'e250':  { name: 'Sodium nitrite', fn: 'Cured-meat preservative', risk: 'avoid', note: 'Same nitrosamine/carcinogen concern as E249.' },
+  'e251':  { name: 'Sodium nitrate', fn: 'Cured-meat preservative', risk: 'avoid', note: 'Converts to nitrite in body; same carcinogenic pathway.' },
+  'e252':  { name: 'Potassium nitrate', fn: 'Cured-meat preservative', risk: 'avoid', note: 'Same concern as sodium nitrate.' },
+
+  // Antioxidants
+  'e300':  { name: 'Ascorbic acid (Vit C)', fn: 'Antioxidant / vitamin', risk: 'safe', note: 'Vitamin C; widely beneficial.' },
+  'e306':  { name: 'Tocopherols (Vit E)', fn: 'Antioxidant', risk: 'safe', note: 'Natural vitamin E.' },
+  'e319':  { name: 'TBHQ', fn: 'Synthetic antioxidant', risk: 'concern', note: 'High doses linked to immune effects; possible carcinogen concern in animal studies.' },
+  'e320':  { name: 'BHA', fn: 'Synthetic antioxidant', risk: 'concern', note: 'IARC Group 2B (possibly carcinogenic to humans); banned in Japan and parts of EU foods.' },
+  'e321':  { name: 'BHT', fn: 'Synthetic antioxidant', risk: 'concern', note: 'Endocrine and tumour concerns in animal studies; restricted in EU foods.' },
+  'e322':  { name: 'Lecithin', fn: 'Emulsifier', risk: 'safe', note: 'Usually from soy or sunflower; well-tolerated.' },
+  'e330':  { name: 'Citric acid', fn: 'Acidity regulator', risk: 'safe', note: 'Naturally in citrus; safe.' },
+  'e331':  { name: 'Sodium citrate', fn: 'Acidity regulator', risk: 'safe', note: 'Safe.' },
+  'e334':  { name: 'Tartaric acid', fn: 'Acidity regulator', risk: 'safe', note: 'Safe.' },
+  'e338':  { name: 'Phosphoric acid', fn: 'Acidity regulator (colas)', risk: 'caution', note: 'High intake linked to lower bone density and kidney stress.' },
+
+  // Thickeners / stabilisers
+  'e406':  { name: 'Agar', fn: 'Gelling agent', risk: 'safe', note: 'From seaweed; safe.' },
+  'e407':  { name: 'Carrageenan', fn: 'Thickener / stabiliser', risk: 'caution', note: 'Some studies link degraded forms to gut inflammation; debated.' },
+  'e410':  { name: 'Locust bean gum', fn: 'Thickener', risk: 'safe', note: 'From carob; safe.' },
+  'e412':  { name: 'Guar gum', fn: 'Thickener', risk: 'safe', note: 'High doses can cause bloating.' },
+  'e414':  { name: 'Gum arabic', fn: 'Thickener', risk: 'safe', note: 'Safe; soluble fibre.' },
+  'e415':  { name: 'Xanthan gum', fn: 'Thickener', risk: 'safe', note: 'Safe; very common.' },
+  'e420':  { name: 'Sorbitol', fn: 'Sweetener / humectant', risk: 'caution', note: 'Laxative effect above 20g/day.' },
+  'e421':  { name: 'Mannitol', fn: 'Sweetener', risk: 'caution', note: 'Laxative effect at high doses.' },
+  'e422':  { name: 'Glycerol', fn: 'Humectant', risk: 'safe', note: 'Safe.' },
+  'e433':  { name: 'Polysorbate 80', fn: 'Emulsifier', risk: 'caution', note: 'Recent research suggests possible gut microbiome effects.' },
+  'e440':  { name: 'Pectin', fn: 'Gelling agent', risk: 'safe', note: 'Natural fibre; safe.' },
+  'e450':  { name: 'Diphosphates', fn: 'Emulsifier / raising agent', risk: 'caution', note: 'High intake associated with kidney stress and cardiovascular risk.' },
+  'e451':  { name: 'Triphosphates', fn: 'Emulsifier / stabiliser', risk: 'caution', note: 'Same phosphate-load concern as E450.' },
+  'e466':  { name: 'Carboxymethylcellulose (CMC)', fn: 'Thickener / emulsifier', risk: 'concern', note: 'Recent studies suggest negative effects on gut microbiome.' },
+  'e471':  { name: 'Mono- &amp; diglycerides', fn: 'Emulsifier', risk: 'caution', note: 'May contain trans fats; ubiquitous in ultra-processed foods.' },
+  'e472e': { name: 'DATEM', fn: 'Dough conditioner', risk: 'caution', note: 'Heart issues in animal studies at very high doses.' },
+  'e476':  { name: 'PGPR', fn: 'Emulsifier (chocolate)', risk: 'safe', note: 'Generally safe at food levels.' },
+
+  // Flavour enhancers
+  'e500':  { name: 'Sodium bicarbonate', fn: 'Raising agent', risk: 'safe', note: 'Baking soda; safe.' },
+  'e503':  { name: 'Ammonium carbonate', fn: 'Raising agent', risk: 'safe', note: 'Safe.' },
+  'e621':  { name: 'MSG', fn: 'Flavour enhancer', risk: 'safe', note: 'FDA classifies as safe; some sensitivity reports remain controversial.' },
+  'e627':  { name: 'Disodium guanylate', fn: 'Flavour enhancer', risk: 'safe', note: 'Safe — usually paired with MSG.' },
+  'e631':  { name: 'Disodium inosinate', fn: 'Flavour enhancer', risk: 'safe', note: 'Safe — typically from yeast or fish.' },
+  'e635':  { name: 'Disodium ribonucleotides', fn: 'Flavour enhancer', risk: 'safe', note: 'Safe; not for those avoiding fish/yeast derivatives.' },
+
+  // Sweeteners
+  'e950':  { name: 'Acesulfame K', fn: 'Artificial sweetener', risk: 'caution', note: 'EFSA considers safe; some animal studies suggest concerns.' },
+  'e951':  { name: 'Aspartame', fn: 'Artificial sweetener', risk: 'concern', note: 'IARC classified as Group 2B (possibly carcinogenic) in 2023; intake limits exist.' },
+  'e952':  { name: 'Cyclamate', fn: 'Artificial sweetener', risk: 'concern', note: 'Banned in US since 1969 over cancer concerns; still allowed in EU at low levels.' },
+  'e954':  { name: 'Saccharin', fn: 'Artificial sweetener', risk: 'caution', note: 'Removed from US carcinogen list 2000; some still avoid.' },
+  'e955':  { name: 'Sucralose', fn: 'Artificial sweetener', risk: 'caution', note: 'Recent research on gut microbiome and DNA damage; widely allowed.' },
+  'e960':  { name: 'Steviol glycosides', fn: 'Natural sweetener', risk: 'safe', note: 'From stevia plant; widely considered safe.' },
+  'e961':  { name: 'Neotame', fn: 'Artificial sweetener', risk: 'caution', note: 'EFSA safe at low doses; sparse long-term data.' },
+  'e965':  { name: 'Maltitol', fn: 'Sugar alcohol', risk: 'caution', note: 'Laxative effect above 20-30g/day.' },
+  'e968':  { name: 'Erythritol', fn: 'Sugar alcohol', risk: 'caution', note: 'A 2023 study linked high blood levels to cardiovascular events; under review.' },
+
+  // Misc
+  'e1100': { name: 'Amylase', fn: 'Enzyme', risk: 'safe', note: 'Processing aid; safe.' },
+  'e1400': { name: 'Modified starches', fn: 'Thickener', risk: 'safe', note: 'Generally safe.' },
+};
+
+/* =====================================================
+   DATA: USDA nutrient ID mapping
+   ===================================================== */
+const USDA_NUTRIENTS = {
+  // macros
+  1003: { key: 'protein', label: 'Protein', unit: 'g', group: 'macro', dv: DV.protein_g },
+  1004: { key: 'fat', label: 'Total Fat', unit: 'g', group: 'macro', dv: DV.fat_g },
+  1005: { key: 'carbs', label: 'Carbohydrates', unit: 'g', group: 'macro', dv: DV.carbs_g },
+  1008: { key: 'energy', label: 'Energy', unit: 'kcal', group: 'macro' },
+  1051: { key: 'water', label: 'Water', unit: 'g', group: 'macro' },
+  1079: { key: 'fiber', label: 'Fibre', unit: 'g', group: 'macro', dv: DV.fiber_g },
+  2000: { key: 'sugars', label: 'Total Sugars', unit: 'g', group: 'macro' },
+  1235: { key: 'sugars_added', label: 'Added Sugars', unit: 'g', group: 'macro', dv: DV.sugar_added_g },
+
+  // fats
+  1085: { key: 'sat_fat', label: 'Saturated Fat', unit: 'g', group: 'fat', dv: DV.sat_fat_g },
+  1257: { key: 'trans_fat', label: 'Trans Fat', unit: 'g', group: 'fat' },
+  1258: { key: 'mufa', label: 'Monounsaturated Fat', unit: 'g', group: 'fat' },
+  1292: { key: 'pufa', label: 'Polyunsaturated Fat', unit: 'g', group: 'fat' },
+  1253: { key: 'cholesterol', label: 'Cholesterol', unit: 'mg', group: 'fat', dv: DV.cholesterol_mg },
+  1404: { key: 'ala', label: 'Omega-3 (ALA)', unit: 'g', group: 'fat' },
+  1272: { key: 'dha', label: 'Omega-3 (DHA)', unit: 'g', group: 'fat' },
+  1278: { key: 'epa', label: 'Omega-3 (EPA)', unit: 'g', group: 'fat' },
+  1316: { key: 'la', label: 'Omega-6 (Linoleic)', unit: 'g', group: 'fat' },
+
+  // vitamins
+  1106: { key: 'vit_a',  label: 'Vitamin A', unit: 'mcg', group: 'vitamin', dv: DV.vit_a_mcg },
+  1162: { key: 'vit_c',  label: 'Vitamin C', unit: 'mg', group: 'vitamin', dv: DV.vit_c_mg },
+  1114: { key: 'vit_d',  label: 'Vitamin D', unit: 'mcg', group: 'vitamin', dv: DV.vit_d_mcg },
+  1109: { key: 'vit_e',  label: 'Vitamin E', unit: 'mg', group: 'vitamin', dv: DV.vit_e_mg },
+  1185: { key: 'vit_k',  label: 'Vitamin K', unit: 'mcg', group: 'vitamin', dv: DV.vit_k_mcg },
+  1165: { key: 'b1',     label: 'Thiamin (B1)', unit: 'mg', group: 'vitamin', dv: DV.thiamin_mg },
+  1166: { key: 'b2',     label: 'Riboflavin (B2)', unit: 'mg', group: 'vitamin', dv: DV.riboflavin_mg },
+  1167: { key: 'b3',     label: 'Niacin (B3)', unit: 'mg', group: 'vitamin', dv: DV.niacin_mg },
+  1175: { key: 'b6',     label: 'Vitamin B6', unit: 'mg', group: 'vitamin', dv: DV.vit_b6_mg },
+  1177: { key: 'folate', label: 'Folate', unit: 'mcg', group: 'vitamin', dv: DV.folate_mcg },
+  1178: { key: 'b12',    label: 'Vitamin B12', unit: 'mcg', group: 'vitamin', dv: DV.vit_b12_mcg },
+  1170: { key: 'pantothenic', label: 'Pantothenic Acid', unit: 'mg', group: 'vitamin', dv: DV.pantothenic_mg },
+  1176: { key: 'biotin', label: 'Biotin', unit: 'mcg', group: 'vitamin', dv: DV.biotin_mcg },
+  1180: { key: 'choline', label: 'Choline', unit: 'mg', group: 'vitamin', dv: DV.choline_mg },
+
+  // minerals
+  1087: { key: 'calcium',    label: 'Calcium', unit: 'mg', group: 'mineral', dv: DV.calcium_mg },
+  1089: { key: 'iron',       label: 'Iron', unit: 'mg', group: 'mineral', dv: DV.iron_mg },
+  1090: { key: 'magnesium',  label: 'Magnesium', unit: 'mg', group: 'mineral', dv: DV.magnesium_mg },
+  1091: { key: 'phosphorus', label: 'Phosphorus', unit: 'mg', group: 'mineral', dv: DV.phosphorus_mg },
+  1092: { key: 'potassium',  label: 'Potassium', unit: 'mg', group: 'mineral', dv: DV.potassium_mg },
+  1093: { key: 'sodium',     label: 'Sodium', unit: 'mg', group: 'mineral', dv: DV.sodium_mg },
+  1095: { key: 'zinc',       label: 'Zinc', unit: 'mg', group: 'mineral', dv: DV.zinc_mg },
+  1098: { key: 'copper',     label: 'Copper', unit: 'mg', group: 'mineral', dv: DV.copper_mg },
+  1101: { key: 'manganese',  label: 'Manganese', unit: 'mg', group: 'mineral', dv: DV.manganese_mg },
+  1103: { key: 'selenium',   label: 'Selenium', unit: 'mcg', group: 'mineral', dv: DV.selenium_mcg },
+  1100: { key: 'iodine',     label: 'Iodine', unit: 'mcg', group: 'mineral', dv: DV.iodine_mcg },
+
+  // amino acids
+  1210: { key: 'tryptophan', label: 'Tryptophan', unit: 'g', group: 'amino' },
+  1211: { key: 'threonine',  label: 'Threonine', unit: 'g', group: 'amino' },
+  1212: { key: 'isoleucine', label: 'Isoleucine', unit: 'g', group: 'amino' },
+  1213: { key: 'leucine',    label: 'Leucine', unit: 'g', group: 'amino' },
+  1214: { key: 'lysine',     label: 'Lysine', unit: 'g', group: 'amino' },
+  1215: { key: 'methionine', label: 'Methionine', unit: 'g', group: 'amino' },
+  1216: { key: 'cystine',    label: 'Cystine', unit: 'g', group: 'amino' },
+  1217: { key: 'phenylalanine', label: 'Phenylalanine', unit: 'g', group: 'amino' },
+  1218: { key: 'tyrosine',   label: 'Tyrosine', unit: 'g', group: 'amino' },
+  1219: { key: 'valine',     label: 'Valine', unit: 'g', group: 'amino' },
+  1220: { key: 'arginine',   label: 'Arginine', unit: 'g', group: 'amino' },
+  1221: { key: 'histidine',  label: 'Histidine', unit: 'g', group: 'amino' },
+
+  // other
+  1057: { key: 'caffeine', label: 'Caffeine', unit: 'mg', group: 'other' },
+};
+
+/* =====================================================
+   STATE
+   ===================================================== */
+const state = {
+  apiKey: '',
+  lastQuery: '',
+};
+
+function loadApiKey() {
+  try {
+    const k = localStorage.getItem('usda_api_key');
+    if (k) { state.apiKey = k; document.getElementById('apiKey').value = k; updateSettingsBtn(); }
+  } catch (e) { /* artifact env, ignore */ }
+}
+function saveApiKey(k) {
+  state.apiKey = k.trim();
+  try { localStorage.setItem('usda_api_key', state.apiKey); } catch (e) { /* ignore */ }
+  updateSettingsBtn();
+}
+function updateSettingsBtn() {
+  const btn = document.getElementById('settingsBtn');
+  if (state.apiKey) btn.classList.add('connected');
+  else btn.classList.remove('connected');
+}
+
+/* =====================================================
+   API LAYER
+   ===================================================== */
+async function searchOFF(query) {
+  if (/^\d{8,14}$/.test(query)) {
+    const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${query}.json`);
+    const d = await r.json();
+    return d.product ? [{ ...d.product, _source: 'off' }] : [];
+  }
+  const fields = 'product_name,brands,image_front_small_url,image_front_url,nutrition_grade_fr,nova_group,ecoscore_grade,code';
+  const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=10&fields=${fields}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  return (d.products || []).filter(p => p.product_name && p.code).map(p => ({ ...p, _source: 'off' }));
+}
+
+async function searchUSDA(query) {
+  if (!state.apiKey) return [];
+  const url = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(state.apiKey)}&query=${encodeURIComponent(query)}&pageSize=8&dataType=Foundation,SR%20Legacy,Survey%20%28FNDDS%29`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const d = await r.json();
+    return (d.foods || []).map(f => ({
+      _source: 'usda',
+      code: 'usda-' + f.fdcId,
+      fdcId: f.fdcId,
+      product_name: f.description,
+      brands: f.brandOwner || f.dataType || '',
+      _category: f.foodCategory || '',
+    }));
+  } catch (e) { return []; }
+}
+
+async function getOFFDetail(barcode) {
+  const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
+  const d = await r.json();
+  return d.product || null;
+}
+
+async function getUSDADetail(fdcId) {
+  const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${encodeURIComponent(state.apiKey)}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('USDA fetch failed');
+  return await r.json();
+}
+
+/* =====================================================
+   UI
+   ===================================================== */
+const searchInput  = document.getElementById('search');
+const output       = document.getElementById('output');
+const intro        = document.getElementById('intro');
+const suggestions  = document.getElementById('suggestions');
+const settingsBtn  = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const settingsStatus = document.getElementById('settingsStatus');
+
+settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('open'));
+
+document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+  const k = document.getElementById('apiKey').value.trim();
+  if (!k) { setStatus('Please paste a key first.', 'err'); return; }
+  setStatus('Testing…', '');
+  try {
+    const r = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(k)}&query=apple&pageSize=1`);
+    if (!r.ok) { setStatus('Invalid key. Double-check and try again.', 'err'); return; }
+    saveApiKey(k);
+    setStatus('✓ Connected — USDA data unlocked.', 'ok');
+    setTimeout(() => settingsPanel.classList.remove('open'), 1200);
+  } catch (e) { setStatus('Network error: ' + e.message, 'err'); }
 });
 
-let debounceTimer;
+function setStatus(msg, kind) {
+  settingsStatus.textContent = msg;
+  settingsStatus.className = 'settings-status ' + (kind || '');
+}
+
+document.querySelectorAll('.chip').forEach(b => {
+  b.addEventListener('click', () => { searchInput.value = b.dataset.q; runSearch(b.dataset.q); });
+});
+
+let debounce;
 searchInput.addEventListener('input', e => {
-  clearTimeout(debounceTimer);
+  clearTimeout(debounce);
   const q = e.target.value.trim();
-  if (!q) {
-    output.innerHTML = '';
-    intro.style.display = 'grid';
-    suggestions.style.display = 'flex';
-    return;
-  }
-  debounceTimer = setTimeout(() => runSearch(q), 380);
+  if (!q) { output.innerHTML = ''; intro.style.display = 'grid'; suggestions.style.display = 'flex'; return; }
+  debounce = setTimeout(() => runSearch(q), 400);
 });
-
 searchInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    clearTimeout(debounceTimer);
-    const q = e.target.value.trim();
-    if (q) runSearch(q);
-  }
+  if (e.key === 'Enter') { clearTimeout(debounce); const q = e.target.value.trim(); if (q) runSearch(q); }
 });
 
 async function runSearch(query) {
+  state.lastQuery = query;
   intro.style.display = 'none';
   suggestions.style.display = 'none';
   output.innerHTML = `<div class="loading"><div class="spinner"></div><p>Searching the pantry…</p></div>`;
-
   try {
-    let products = [];
-    if (/^\d{8,14}$/.test(query)) {
-      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${query}.json`);
-      const data = await res.json();
-      if (data.product) products = [data.product];
-    } else {
-      const fields = 'product_name,brands,image_front_small_url,image_front_url,nutrition_grade_fr,nova_group,ecoscore_grade,code';
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=12&fields=${fields}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      products = (data.products || []).filter(p => p.product_name && p.code);
-    }
-
-    if (products.length === 0) {
+    const [off, usda] = await Promise.all([searchOFF(query), searchUSDA(query)]);
+    const combined = [...off, ...usda];
+    if (combined.length === 0) {
       output.innerHTML = `<div class="empty">No products found. Try a different name or barcode.</div>`;
       return;
     }
-
-    if (products.length === 1) {
-      await showDetail(products[0].code);
-    } else {
-      renderResults(products, query);
-    }
+    renderResults(combined, query, off.length, usda.length);
   } catch (err) {
     output.innerHTML = `<div class="empty">Something went wrong: ${err.message}</div>`;
   }
 }
 
-function renderResults(products, query) {
-  output.innerHTML = `
-    <div class="section-heading">
-      <h2>Results for “${escapeHtml(query)}”</h2>
-      <span class="count">${products.length} found</span>
-    </div>
-    <div class="results-grid fade-in">${products.map(p => `
-      <div class="result-card" data-code="${p.code}">
-        <img class="result-img" src="${p.image_front_small_url || p.image_front_url || placeholderImg()}" onerror="this.src='${placeholderImg()}'" alt="">
-        <div class="result-name">${escapeHtml(truncate(p.product_name, 50))}</div>
-        <div class="result-brand">${escapeHtml(truncate(p.brands || '—', 30))}</div>
-        <div class="result-mini-scores">
-          ${miniBadge('Nutri', p.nutrition_grade_fr, false)}
-          ${miniBadge('NOVA', p.nova_group, true)}
-          ${miniBadge('Eco', p.ecoscore_grade, false)}
-        </div>
+function renderResults(products, query, offCount, usdaCount) {
+  const showOFF  = (filter) => filter === 'all' || filter === 'off';
+  const showUSDA = (filter) => filter === 'all' || filter === 'usda';
+  let filter = 'all';
+
+  const render = () => {
+    const filtered = products.filter(p => (p._source === 'off' && showOFF(filter)) || (p._source === 'usda' && showUSDA(filter)));
+    output.innerHTML = `
+      <div class="section-heading">
+        <h2>Results for "${escapeHtml(query)}"</h2>
+        <span class="count">${products.length} found</span>
       </div>
-    `).join('')}</div>
-  `;
-  document.querySelectorAll('.result-card').forEach(card => {
-    card.addEventListener('click', () => showDetail(card.dataset.code));
-  });
+      <div class="source-tabs">
+        <button class="source-tab ${filter==='all'?'active':''}" data-f="all">All <span class="badge">${products.length}</span></button>
+        <button class="source-tab ${filter==='off'?'active':''}" data-f="off">Packaged <span class="badge">${offCount}</span></button>
+        <button class="source-tab ${filter==='usda'?'active':''}" data-f="usda">Whole Foods <span class="badge">${usdaCount}</span></button>
+      </div>
+      <div class="results-grid fade-in">${filtered.map(p => p._source === 'off' ? renderOFFCard(p) : renderUSDACard(p)).join('')}</div>
+    `;
+    document.querySelectorAll('.source-tab').forEach(t => {
+      t.addEventListener('click', () => { filter = t.dataset.f; render(); });
+    });
+    document.querySelectorAll('.result-card').forEach(c => {
+      c.addEventListener('click', () => {
+        if (c.dataset.source === 'off') showOFFDetail(c.dataset.code);
+        else showUSDADetailHandler(c.dataset.fdc);
+      });
+    });
+  };
+  render();
+}
+
+function renderOFFCard(p) {
+  return `
+    <div class="result-card" data-source="off" data-code="${p.code}">
+      <span class="source-pill off">Packaged</span>
+      <img class="result-img" src="${p.image_front_small_url || p.image_front_url || placeholderImg()}" onerror="this.src='${placeholderImg()}'" alt="">
+      <div class="result-name">${escapeHtml(truncate(p.product_name, 50))}</div>
+      <div class="result-brand">${escapeHtml(truncate(p.brands || '—', 30))}</div>
+      <div class="result-mini-scores">
+        ${miniBadge('Nutri', p.nutrition_grade_fr, false)}
+        ${miniBadge('NOVA', p.nova_group, true)}
+        ${miniBadge('Eco', p.ecoscore_grade, false)}
+      </div>
+    </div>`;
+}
+
+function renderUSDACard(p) {
+  return `
+    <div class="result-card" data-source="usda" data-fdc="${p.fdcId}">
+      <span class="source-pill usda">Whole Food</span>
+      <img class="result-img" src="${placeholderImg('plant')}" alt="">
+      <div class="result-name">${escapeHtml(truncate(p.product_name, 60))}</div>
+      <div class="result-brand">${escapeHtml(truncate(p._category || p.brands || 'USDA Foundation', 30))}</div>
+      <div class="result-mini-scores">
+        <span class="mini-badge" style="background:var(--accent)">Lab Verified</span>
+      </div>
+    </div>`;
 }
 
 function miniBadge(label, val, isNova) {
@@ -766,44 +1409,46 @@ function miniBadge(label, val, isNova) {
   const display = isNova ? val : String(val).toUpperCase();
   return `<span class="mini-badge" style="background:${color}">${label} ${display}</span>`;
 }
+function scoreColor(g) { return { a:'var(--score-a)', b:'var(--score-b)', c:'var(--score-c)', d:'var(--score-d)', e:'var(--score-e)' }[String(g).toLowerCase()] || '#999'; }
+function novaColor(n)  { return { 1:'var(--nova-1)', 2:'var(--nova-2)', 3:'var(--nova-3)', 4:'var(--nova-4)' }[n] || '#999'; }
 
-function scoreColor(g) {
-  return { a: 'var(--score-a)', b: 'var(--score-b)', c: 'var(--score-c)', d: 'var(--score-d)', e: 'var(--score-e)' }[String(g).toLowerCase()] || '#999';
-}
-function novaColor(n) {
-  return { 1: 'var(--nova-1)', 2: 'var(--nova-2)', 3: 'var(--nova-3)', 4: 'var(--nova-4)' }[n] || '#999';
-}
-
-async function showDetail(barcode) {
+/* =====================================================
+   DETAIL — OPEN FOOD FACTS
+   ===================================================== */
+async function showOFFDetail(barcode) {
   output.innerHTML = `<div class="loading"><div class="spinner"></div><p>Reading the label…</p></div>`;
   try {
-    const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
-    const data = await res.json();
-    if (!data.product) {
-      output.innerHTML = `<div class="empty">Product not found.</div>`;
-      return;
-    }
-    renderDetail(data.product);
+    const p = await getOFFDetail(barcode);
+    if (!p) { output.innerHTML = `<div class="empty">Product not found.</div>`; return; }
+    renderOFFDetail(p);
   } catch (err) {
-    output.innerHTML = `<div class="empty">Error loading: ${err.message}</div>`;
+    output.innerHTML = `<div class="empty">Error: ${err.message}</div>`;
   }
 }
 
-function renderDetail(p) {
+function renderOFFDetail(p) {
   const n = p.nutriments || {};
-  const nutri = p.nutrition_grade_fr;
-  const nova = p.nova_group;
-  const eco = p.ecoscore_grade;
   const levels = p.nutrient_levels || {};
+  const additives = (p.additives_tags || []).map(t => t.replace('en:', ''));
+  const allergens = (p.allergens_tags || []).map(t => t.replace('en:', '').replace(/-/g, ' '));
+  const labels = (p.labels_tags || []).map(t => t.replace('en:', '').replace(/-/g, ' ')).filter(l => l.length < 30);
 
-  const levelKeys = [
-    ['fat', 'Fat', n.fat_100g],
-    ['saturated-fat', 'Saturated Fat', n['saturated-fat_100g']],
-    ['sugars', 'Sugars', n.sugars_100g],
-    ['salt', 'Salt', n.salt_100g],
-  ];
+  // build nutrient sections
+  const vitamins = collectOFFNutrients(n, 'vitamin');
+  const minerals = collectOFFNutrients(n, 'mineral');
+  const fats     = collectOFFNutrients(n, 'fat-detail');
 
-  const summary = buildSummary(p);
+  const lensScore = computeLensScore({
+    nutri: p.nutrition_grade_fr,
+    nova: p.nova_group,
+    additivesCount: additives.length,
+    sugar: n.sugars_100g,
+    salt: n.salt_100g,
+    fiber: n.fiber_100g,
+    protein: n.proteins_100g,
+  });
+
+  const gi = estimateGI(n, p.categories);
   const lastCat = (p.categories || '').split(',').slice(-1)[0].trim();
 
   output.innerHTML = `
@@ -814,49 +1459,78 @@ function renderDetail(p) {
         <img class="detail-img" src="${p.image_front_url || placeholderImg()}" onerror="this.src='${placeholderImg()}'" alt="">
         <div class="detail-title">
           ${lastCat ? `<div class="detail-cat">${escapeHtml(lastCat)}</div>` : ''}
-          <h2>${escapeHtml(p.product_name || 'Unknown Product')}</h2>
+          <h2>${escapeHtml(p.product_name || 'Unknown')}</h2>
           ${p.brands ? `<div class="detail-brand">by ${escapeHtml(p.brands)}</div>` : ''}
         </div>
       </div>
 
+      ${renderLensScore(lensScore)}
+
       <div class="scores">
-        ${scoreCard('Nutri-Score', nutri, nutriDesc(nutri), false)}
-        ${scoreCard('NOVA Group', nova, novaDesc(nova), true)}
-        ${scoreCard('Eco-Score', eco, ecoDesc(eco), false)}
+        ${scoreCard('Nutri-Score', p.nutrition_grade_fr, nutriDesc(p.nutrition_grade_fr), false)}
+        ${scoreCard('NOVA Group', p.nova_group, novaDesc(p.nova_group), true)}
+        ${scoreCard('Eco-Score', p.ecoscore_grade, ecoDesc(p.ecoscore_grade), false)}
       </div>
 
-      <div class="health-summary">${summary}</div>
+      <div class="health-summary">${buildSummary(p, additives.length, lensScore)}</div>
 
-      ${levelKeys.some(k => levels[k[0]]) ? `
+      ${labels.length ? `
       <div class="section">
-        <h3>Nutrient Levels</h3>
+        <h3>Labels &amp; Certifications</h3>
+        <div class="labels-wrap">${labels.slice(0, 14).map(l => `<span class="label-tag">${escapeHtml(l)}</span>`).join('')}</div>
+      </div>` : ''}
+
+      ${Object.keys(levels).length ? `
+      <div class="section">
+        <h3>Nutrient Levels <span class="meta">per 100g</span></h3>
         <div class="nutrient-levels">
-          ${levelKeys.filter(k => levels[k[0]]).map(([key, label, val]) => `
-            <div class="nutrient-bar">
-              <div>
-                <span class="nutrient-name">${label}</span>
-                <span class="nutrient-tag" style="background:${levelColor(levels[key])}">${levels[key]}</span>
-              </div>
+          ${['fat','saturated-fat','sugars','salt'].filter(k => levels[k]).map(k => {
+            const labels = { 'fat':'Fat','saturated-fat':'Saturated Fat','sugars':'Sugars','salt':'Salt' };
+            const valKey = { 'fat':'fat_100g','saturated-fat':'saturated-fat_100g','sugars':'sugars_100g','salt':'salt_100g' };
+            const val = n[valKey[k]];
+            return `<div class="nutrient-bar">
+              <div><span class="nutrient-name">${labels[k]}</span><span class="nutrient-tag" style="background:${levelColor(levels[k])}">${levels[k]}</span></div>
               <span class="nutrient-amount">${val != null ? val.toFixed(1) + ' g' : '—'}</span>
-            </div>
-          `).join('')}
+            </div>`;
+          }).join('')}
         </div>
       </div>` : ''}
 
       <div class="section">
-        <h3>Nutrition Facts <span style="font-size:11px;font-family:var(--sans);font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-faded);font-style:normal">per 100g</span></h3>
+        <h3>Macronutrients <span class="meta">per 100g</span></h3>
         <div class="nutrition-table">
-          ${nutritionRow('Energy', n['energy-kcal_100g'] != null ? n['energy-kcal_100g'].toFixed(0) + ' kcal' : null, true)}
-          ${nutritionRow('Fat', n.fat_100g != null ? n.fat_100g.toFixed(1) + ' g' : null, true)}
-          ${nutritionRow('— Saturated', n['saturated-fat_100g'] != null ? n['saturated-fat_100g'].toFixed(1) + ' g' : null, false, true)}
-          ${nutritionRow('Carbohydrates', n.carbohydrates_100g != null ? n.carbohydrates_100g.toFixed(1) + ' g' : null, true)}
-          ${nutritionRow('— Sugars', n.sugars_100g != null ? n.sugars_100g.toFixed(1) + ' g' : null, false, true)}
-          ${nutritionRow('Fibre', n.fiber_100g != null ? n.fiber_100g.toFixed(1) + ' g' : null)}
-          ${nutritionRow('Protein', n.proteins_100g != null ? n.proteins_100g.toFixed(1) + ' g' : null, true)}
-          ${nutritionRow('Salt', n.salt_100g != null ? n.salt_100g.toFixed(2) + ' g' : null, true)}
-          ${nutritionRow('— Sodium', n.sodium_100g != null ? (n.sodium_100g * 1000).toFixed(0) + ' mg' : null, false, true)}
+          ${nutritionRow('Energy', n['energy-kcal_100g'], 'kcal', null, true)}
+          ${nutritionRow('Fat', n.fat_100g, 'g', DV.fat_g, true)}
+          ${nutritionRow('— Saturated', n['saturated-fat_100g'], 'g', DV.sat_fat_g, false, true)}
+          ${nutritionRow('— Trans', n['trans-fat_100g'], 'g', null, false, true)}
+          ${nutritionRow('Carbohydrates', n.carbohydrates_100g, 'g', DV.carbs_g, true)}
+          ${nutritionRow('— Sugars', n.sugars_100g, 'g', null, false, true)}
+          ${nutritionRow('Fibre', n.fiber_100g, 'g', DV.fiber_g)}
+          ${nutritionRow('Protein', n.proteins_100g, 'g', DV.protein_g, true)}
+          ${nutritionRow('Salt', n.salt_100g, 'g', null, true)}
+          ${nutritionRow('— Sodium', n.sodium_100g != null ? n.sodium_100g * 1000 : null, 'mg', DV.sodium_mg, false, true)}
+          ${nutritionRow('Cholesterol', n.cholesterol_100g != null ? n.cholesterol_100g * 1000 : null, 'mg', DV.cholesterol_mg)}
         </div>
       </div>
+
+      ${fats.length ? renderNutrientSection('Fatty Acid Breakdown', fats) : ''}
+      ${vitamins.length ? renderNutrientSection('Vitamins', vitamins) : ''}
+      ${minerals.length ? renderNutrientSection('Minerals', minerals) : ''}
+
+      ${gi ? `
+      <div class="section">
+        <h3>Glycemic Estimate</h3>
+        <div class="gi-card">
+          <div class="gi-meter">
+            <div class="gi-num ${gi.level}">${gi.number}</div>
+            <div class="gi-label">${gi.level}</div>
+          </div>
+          <div class="gi-info">
+            <h4>${gi.title}</h4>
+            <p>${gi.note}</p>
+          </div>
+        </div>
+      </div>` : ''}
 
       ${p.ingredients_text ? `
       <div class="section">
@@ -864,24 +1538,18 @@ function renderDetail(p) {
         <div class="ingredients">${escapeHtml(p.ingredients_text)}</div>
       </div>` : ''}
 
-      ${(p.additives_tags && p.additives_tags.length) ? `
-      <div class="section">
-        <h3>Additives <span style="font-size:11px;font-family:var(--sans);font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-faded);font-style:normal">${p.additives_tags.length} found</span></h3>
-        <div class="tags">
-          ${p.additives_tags.map(t => `<span class="tag warn">${escapeHtml(t.replace('en:', '').toUpperCase())}</span>`).join('')}
-        </div>
-      </div>` : ''}
+      ${additives.length ? renderAdditivesSection(additives) : ''}
 
-      ${(p.allergens_tags && p.allergens_tags.length) ? `
+      ${allergens.length ? `
       <div class="section">
         <h3>Allergens</h3>
-        <div class="tags">
-          ${p.allergens_tags.map(t => `<span class="tag danger">${escapeHtml(t.replace('en:', '').replace(/-/g, ' '))}</span>`).join('')}
-        </div>
+        <div class="tags">${allergens.map(a => `<span class="tag danger">${escapeHtml(a)}</span>`).join('')}</div>
       </div>` : ''}
 
-      <div style="text-align:center; padding-top:8px; font-size:12px; color:var(--ink-faded); letter-spacing:0.04em">
-        Barcode: ${p.code || '—'}
+      ${renderEcoSection(p)}
+
+      <div style="text-align:center;padding-top:8px;font-size:12px;color:var(--ink-faded);letter-spacing:0.04em">
+        Source: Open Food Facts &middot; Barcode: ${p.code || '—'}
       </div>
     </div>
   `;
@@ -889,10 +1557,228 @@ function renderDetail(p) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function nutritionRow(label, value, bold = false, indent = false) {
+/* =====================================================
+   DETAIL — USDA
+   ===================================================== */
+async function showUSDADetailHandler(fdcId) {
+  output.innerHTML = `<div class="loading"><div class="spinner"></div><p>Reading the lab report…</p></div>`;
+  try {
+    const f = await getUSDADetail(fdcId);
+    renderUSDADetail(f);
+  } catch (err) {
+    output.innerHTML = `<div class="empty">Error: ${err.message}</div>`;
+  }
+}
+
+function renderUSDADetail(f) {
+  const byKey = {};
+  (f.foodNutrients || []).forEach(fn => {
+    const id = fn.nutrient ? fn.nutrient.id : fn.nutrientId;
+    const amount = fn.amount != null ? fn.amount : (fn.nutrient && fn.nutrient.amount);
+    const info = USDA_NUTRIENTS[id];
+    if (info && amount != null) byKey[info.key] = { ...info, value: amount };
+  });
+
+  const get = (k) => byKey[k] ? byKey[k].value : null;
+
+  const macros = ['protein','fat','carbs','fiber','sugars','sugars_added','water'].map(k => byKey[k]).filter(Boolean);
+  const fats   = ['sat_fat','trans_fat','mufa','pufa','cholesterol','ala','dha','epa','la'].map(k => byKey[k]).filter(Boolean);
+  const vits   = ['vit_a','vit_c','vit_d','vit_e','vit_k','b1','b2','b3','b6','folate','b12','pantothenic','biotin','choline'].map(k => byKey[k]).filter(Boolean);
+  const mins   = ['calcium','iron','magnesium','phosphorus','potassium','sodium','zinc','copper','manganese','selenium','iodine'].map(k => byKey[k]).filter(Boolean);
+  const aminos = ['tryptophan','threonine','isoleucine','leucine','lysine','methionine','cystine','phenylalanine','tyrosine','valine','arginine','histidine'].map(k => byKey[k]).filter(Boolean);
+
+  const energy = get('energy');
+  const protein = get('protein');
+  const carbs = get('carbs');
+  const fat = get('fat');
+  const fiber = get('fiber');
+
+  // Synthesise a Food Lens score for whole foods (different logic — they're usually healthy)
+  const isWhole = !f.brandedFoodCategory && !f.ingredients;
+  const lens = computeLensScoreWhole({ protein, fat, carbs, fiber, sugar: get('sugars'), satFat: get('sat_fat'), sodium: get('sodium'), isWhole });
+
+  const gi = estimateGI({
+    sugars_100g: get('sugars'),
+    fiber_100g: fiber,
+    proteins_100g: protein,
+    fat_100g: fat,
+    carbohydrates_100g: carbs,
+  }, f.foodCategory || f.brandedFoodCategory || '');
+
+  output.innerHTML = `
+    <div class="detail fade-in">
+      <button class="back-btn" id="backBtn">← Back</button>
+
+      <div class="detail-hero">
+        <img class="detail-img" src="${placeholderImg('plant')}" alt="">
+        <div class="detail-title">
+          <div class="detail-cat">${escapeHtml(f.foodCategory || f.dataType || 'USDA Database')}</div>
+          <h2>${escapeHtml(f.description || 'Unknown')}</h2>
+          ${f.brandOwner ? `<div class="detail-brand">by ${escapeHtml(f.brandOwner)}</div>` : `<div class="detail-brand">Lab-verified composition data</div>`}
+        </div>
+      </div>
+
+      ${renderLensScore(lens)}
+
+      <div class="health-summary">${buildSummaryWhole(f, lens, byKey)}</div>
+
+      ${f.ingredients ? `
+      <div class="section">
+        <h3>Ingredients</h3>
+        <div class="ingredients">${escapeHtml(f.ingredients)}</div>
+      </div>` : ''}
+
+      <div class="section">
+        <h3>Macronutrients <span class="meta">per 100g</span></h3>
+        <div class="nutrition-table">
+          ${energy != null ? nutritionRow('Energy', energy, 'kcal', null, true) : ''}
+          ${macros.map(m => nutritionRow(m.label, m.value, m.unit, m.dv, true)).join('')}
+        </div>
+      </div>
+
+      ${fats.length ? renderUSDASection('Fatty Acid Profile', fats) : ''}
+      ${vits.length ? renderUSDASection('Vitamins', vits) : ''}
+      ${mins.length ? renderUSDASection('Minerals', mins) : ''}
+      ${aminos.length ? renderUSDASection('Amino Acids', aminos) : ''}
+
+      ${gi ? `
+      <div class="section">
+        <h3>Glycemic Estimate</h3>
+        <div class="gi-card">
+          <div class="gi-meter"><div class="gi-num ${gi.level}">${gi.number}</div><div class="gi-label">${gi.level}</div></div>
+          <div class="gi-info"><h4>${gi.title}</h4><p>${gi.note}</p></div>
+        </div>
+      </div>` : ''}
+
+      <div style="text-align:center;padding-top:8px;font-size:12px;color:var(--ink-faded);letter-spacing:0.04em">
+        Source: USDA FoodData Central &middot; FDC ID: ${f.fdcId || '—'} &middot; Type: ${f.dataType || '—'}
+      </div>
+    </div>
+  `;
+  document.getElementById('backBtn').addEventListener('click', goBack);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =====================================================
+   RENDER HELPERS
+   ===================================================== */
+function renderLensScore(s) {
+  return `
+    <div class="lens-score">
+      <div class="lens-score-circle" style="background:${s.color}">${s.grade}</div>
+      <div class="lens-score-info">
+        <div class="lens-score-label">Food Lens Score</div>
+        <div class="lens-score-title">${s.title}</div>
+        <div class="lens-score-desc">${s.desc}</div>
+      </div>
+    </div>`;
+}
+
+function renderNutrientSection(title, items) {
+  return `
+    <div class="section">
+      <h3>${title} <span class="meta">per 100g</span></h3>
+      <div class="nutrient-grid">
+        ${items.map(i => {
+          const dv = i.dv ? pct(i.value, i.dv) : null;
+          return `<div class="n-item">
+            <span class="n-name">${i.label}</span>
+            <span class="n-value">${fmtVal(i.value, i.unit)}</span>
+            ${dv != null ? `<span class="n-dv ${dv >= 20 ? 'high' : dv >= 10 ? 'med' : ''}">${dv}%</span>` : `<span class="n-dv">—</span>`}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderUSDASection(title, items) {
+  return `
+    <div class="section">
+      <h3>${title} <span class="meta">per 100g</span></h3>
+      <div class="nutrient-grid">
+        ${items.map(i => {
+          const dv = i.dv ? pct(i.value, i.dv) : null;
+          return `<div class="n-item">
+            <span class="n-name">${i.label}</span>
+            <span class="n-value">${fmtVal(i.value, i.unit)}</span>
+            ${dv != null ? `<span class="n-dv ${dv >= 20 ? 'high' : dv >= 10 ? 'med' : ''}">${dv}%</span>` : `<span class="n-dv">—</span>`}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderAdditivesSection(codes) {
+  return `
+    <div class="section">
+      <h3>Additives <span class="meta">${codes.length} found</span></h3>
+      <div class="additive-list">
+        ${codes.map(c => {
+          const code = c.toLowerCase();
+          const info = ADDITIVES[code];
+          if (info) {
+            return `<div class="additive-card ${info.risk}">
+              <div class="additive-head">
+                <span class="additive-name">${info.name}</span>
+                <span class="additive-code">${code.toUpperCase()}</span>
+              </div>
+              <div class="additive-fn">${info.fn}</div>
+              <span class="additive-risk ${info.risk}">${info.risk}</span>
+              <div class="additive-note">${info.note}</div>
+            </div>`;
+          }
+          return `<div class="additive-card">
+            <div class="additive-head">
+              <span class="additive-name">${code.toUpperCase()}</span>
+              <span class="additive-code">—</span>
+            </div>
+            <div class="additive-fn">No detailed information available.</div>
+            <span class="additive-risk unknown">unknown</span>
+            <div class="additive-note">This additive is not in our reference database.</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderEcoSection(p) {
+  const carbon = p.nutriments && p.nutriments['carbon-footprint-from-known-ingredients_100g'];
+  const origin = p.origins || (p.countries_tags || []).map(c => c.replace('en:', '').replace(/-/g, ' ')).slice(0, 3).join(', ');
+  const packaging = (p.packaging_tags || []).slice(0, 5).map(t => t.replace('en:', '').replace(/-/g, ' ')).join(', ');
+  const manufacturing = (p.manufacturing_places_tags || []).map(t => t.replace('en:', '').replace(/-/g, ' ')).slice(0, 3).join(', ');
+  if (!carbon && !origin && !packaging && !manufacturing) return '';
+  return `
+    <div class="section">
+      <h3>Environmental Impact</h3>
+      <div class="eco-grid">
+        ${carbon ? `<div class="eco-card">
+          <div class="eco-card-label">Carbon Footprint</div>
+          <div class="eco-card-value">${carbon.toFixed(0)} g CO₂</div>
+          <div class="eco-card-sub">per 100g of product</div>
+        </div>` : ''}
+        ${origin ? `<div class="eco-card">
+          <div class="eco-card-label">Origin</div>
+          <div class="eco-card-value" style="font-size:14px;text-transform:capitalize">${escapeHtml(origin)}</div>
+        </div>` : ''}
+        ${manufacturing ? `<div class="eco-card">
+          <div class="eco-card-label">Made In</div>
+          <div class="eco-card-value" style="font-size:14px;text-transform:capitalize">${escapeHtml(manufacturing)}</div>
+        </div>` : ''}
+        ${packaging ? `<div class="eco-card">
+          <div class="eco-card-label">Packaging</div>
+          <div class="eco-card-value" style="font-size:14px;text-transform:capitalize">${escapeHtml(packaging)}</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+function nutritionRow(label, value, unit, dv, bold = false, indent = false) {
   if (value == null) return '';
+  const d = dv ? pct(value, dv) : null;
   return `<div class="nutrition-row ${bold ? 'bold' : ''} ${indent ? 'indent' : ''}">
-    <span>${label}</span><span>${value}</span>
+    <span>${label}</span>
+    <span class="val">${fmtVal(value, unit)}</span>
+    <span class="dv">${d != null ? d + '%' : ''}</span>
   </div>`;
 }
 
@@ -911,80 +1797,198 @@ function scoreCard(label, val, desc, isNova) {
   </div>`;
 }
 
-function nutriDesc(g) {
-  return {
-    a: 'Excellent nutritional quality',
-    b: 'Good nutritional quality',
-    c: 'Average nutritional quality',
-    d: 'Poor nutritional quality',
-    e: 'Bad nutritional quality',
-  }[String(g).toLowerCase()] || '';
+/* =====================================================
+   FORMATTING & DESCRIPTIONS
+   ===================================================== */
+function fmtVal(v, unit) {
+  if (v == null) return '—';
+  if (unit === 'kcal') return Math.round(v) + ' kcal';
+  if (unit === 'mcg' && v < 1) return v.toFixed(2) + ' mcg';
+  if (v >= 100) return v.toFixed(0) + ' ' + unit;
+  if (v >= 10) return v.toFixed(1) + ' ' + unit;
+  if (v >= 1) return v.toFixed(2) + ' ' + unit;
+  return v.toFixed(3) + ' ' + unit;
 }
-function novaDesc(n) {
-  return {
-    1: 'Unprocessed or minimally processed',
-    2: 'Processed culinary ingredient',
-    3: 'Processed food',
-    4: 'Ultra-processed food',
-  }[n] || '';
-}
-function ecoDesc(g) {
-  return {
-    a: 'Very low environmental impact',
-    b: 'Low environmental impact',
-    c: 'Moderate environmental impact',
-    d: 'High environmental impact',
-    e: 'Very high environmental impact',
-  }[String(g).toLowerCase()] || '';
-}
-function levelColor(level) {
-  return { low: 'var(--score-a)', moderate: 'var(--score-c)', high: 'var(--score-e)' }[level] || '#999';
+function pct(v, dv) { return Math.round((v / dv) * 100); }
+function nutriDesc(g) { return { a:'Excellent nutritional quality', b:'Good nutritional quality', c:'Average nutritional quality', d:'Poor nutritional quality', e:'Bad nutritional quality' }[String(g).toLowerCase()] || ''; }
+function novaDesc(n)  { return { 1:'Unprocessed or minimally processed', 2:'Processed culinary ingredient', 3:'Processed food', 4:'Ultra-processed food' }[n] || ''; }
+function ecoDesc(g)   { return { a:'Very low environmental impact', b:'Low environmental impact', c:'Moderate environmental impact', d:'High environmental impact', e:'Very high environmental impact' }[String(g).toLowerCase()] || ''; }
+function levelColor(l){ return { low:'var(--score-a)', moderate:'var(--score-c)', high:'var(--score-e)' }[l] || '#999'; }
+
+/* =====================================================
+   FOOD LENS SCORE — our combined assessment
+   ===================================================== */
+function computeLensScore({ nutri, nova, additivesCount, sugar, salt, fiber, protein }) {
+  let pts = 50;
+  const nu = String(nutri || '').toLowerCase();
+  if (nu === 'a') pts += 30; else if (nu === 'b') pts += 15; else if (nu === 'c') pts -= 0;
+  else if (nu === 'd') pts -= 15; else if (nu === 'e') pts -= 25;
+  if (nova === 1) pts += 15; else if (nova === 2) pts += 0;
+  else if (nova === 3) pts -= 10; else if (nova === 4) pts -= 20;
+  if (additivesCount >= 5) pts -= 10; else if (additivesCount >= 2) pts -= 5;
+  if (sugar != null && sugar > 22.5) pts -= 5;
+  if (salt != null && salt > 1.5) pts -= 5;
+  if (fiber != null && fiber > 6) pts += 5;
+  if (protein != null && protein > 12) pts += 5;
+  pts = Math.max(0, Math.min(100, pts));
+  return scoreToGrade(pts);
 }
 
-function buildSummary(p) {
+function computeLensScoreWhole({ protein, fat, carbs, fiber, sugar, satFat, sodium, isWhole }) {
+  let pts = 70;
+  if (isWhole) pts += 10;
+  if (fiber != null && fiber > 6) pts += 8;
+  else if (fiber != null && fiber > 3) pts += 4;
+  if (protein != null && protein > 15) pts += 6;
+  if (sugar != null && sugar > 15) pts -= 8;
+  if (satFat != null && satFat > 5) pts -= 6;
+  if (sodium != null && sodium > 500) pts -= 8;
+  pts = Math.max(0, Math.min(100, pts));
+  return scoreToGrade(pts);
+}
+
+function scoreToGrade(pts) {
+  let grade, color, title, desc;
+  if (pts >= 80) { grade = 'A'; color = 'var(--score-a)'; title = 'Excellent choice'; desc = 'A wholesome food with strong nutritional value.'; }
+  else if (pts >= 65) { grade = 'B'; color = 'var(--score-b)'; title = 'Good choice'; desc = 'Generally a healthy option to include in your diet.'; }
+  else if (pts >= 50) { grade = 'C'; color = 'var(--score-c)'; title = 'Eat in moderation'; desc = 'OK occasionally — there are healthier alternatives.'; }
+  else if (pts >= 35) { grade = 'D'; color = 'var(--score-d)'; title = 'Eat sparingly'; desc = 'Multiple concerns — best as an occasional treat, not a staple.'; }
+  else { grade = 'E'; color = 'var(--score-e)'; title = 'Best avoided'; desc = 'Ultra-processed and nutritionally poor — limit consumption.'; }
+  return { grade, color, title, desc, score: pts };
+}
+
+/* =====================================================
+   GLYCEMIC ESTIMATE — rough heuristic
+   ===================================================== */
+function estimateGI(n, categories) {
+  const sugar = n.sugars_100g;
+  const carbs = n.carbohydrates_100g;
+  const fiber = n.fiber_100g;
+  const protein = n.proteins_100g;
+  const fat = n.fat_100g;
+  if (carbs == null && sugar == null) return null;
+
+  const cat = String(categories || '').toLowerCase();
+  let gi = 50;
+  if (/beverage|soda|cola|juice|soft.*drink/.test(cat)) gi = 65;
+  if (/bread|cereal|breakfast/.test(cat)) gi = 60;
+  if (/legume|bean|lentil/.test(cat)) gi = 30;
+  if (/vegetable|salad/.test(cat) && !/potato/.test(cat)) gi = 25;
+  if (/fruit/.test(cat)) gi = 45;
+  if (/meat|fish|cheese|egg|yogurt|dairy/.test(cat)) gi = 20;
+  if (/candy|sweet|chocolate|cookie|biscuit/.test(cat)) gi = 70;
+
+  if (sugar != null && sugar > 30) gi += 10;
+  if (fiber != null && fiber > 5) gi -= 10;
+  if (protein != null && protein > 10) gi -= 5;
+  if (fat != null && fat > 10) gi -= 5;
+  gi = Math.max(5, Math.min(90, gi));
+
+  let level, title, note;
+  if (gi <= 35) { level = 'low'; title = 'Low glycemic load'; note = 'Likely a slow, steady release of energy — gentler on blood sugar.'; }
+  else if (gi <= 60) { level = 'med'; title = 'Moderate glycemic load'; note = 'Mid-range impact on blood sugar — pair with protein or fibre for balance.'; }
+  else { level = 'high'; title = 'High glycemic load'; note = 'Likely to cause a sharper blood-sugar spike — best eaten with other foods or in moderation.'; }
+  return { number: Math.round(gi), level, title, note };
+}
+
+/* =====================================================
+   SUMMARY GENERATORS
+   ===================================================== */
+function buildSummary(p, additivesCount, lens) {
   const parts = [];
-  const nutri = String(p.nutrition_grade_fr || '').toLowerCase();
+  const n = String(p.nutrition_grade_fr || '').toLowerCase();
   const nova = p.nova_group;
-  const additives = (p.additives_tags || []).length;
-
-  if (nutri === 'a' || nutri === 'b') parts.push(`This food has <strong>good nutritional quality</strong>.`);
-  else if (nutri === 'c') parts.push(`This food has <strong>average nutritional quality</strong>.`);
-  else if (nutri === 'd' || nutri === 'e') parts.push(`This food has <strong>poor nutritional quality</strong>.`);
-
-  if (nova === 4) {
-    parts.push(`It's <strong>ultra-processed</strong>${additives ? ` with ${additives} additive${additives > 1 ? 's' : ''}` : ''} — best enjoyed occasionally.`);
-  } else if (nova === 3) {
-    parts.push(`It's a <strong>processed food</strong>.`);
-  } else if (nova === 1) {
-    parts.push(`It's <strong>unprocessed or minimally processed</strong> — generally a good choice.`);
-  } else if (nova === 2) {
-    parts.push(`It's a <strong>culinary ingredient</strong> used in cooking.`);
-  }
-
-  return parts.length ? parts.join(' ') : 'Browse the details below to learn more about this food.';
+  if (n === 'a' || n === 'b') parts.push(`This food has <strong>good nutritional quality</strong>.`);
+  else if (n === 'c') parts.push(`This food has <strong>average nutritional quality</strong>.`);
+  else if (n === 'd' || n === 'e') parts.push(`This food has <strong>poor nutritional quality</strong>.`);
+  if (nova === 4) parts.push(`It's <strong>ultra-processed</strong>${additivesCount ? ` with ${additivesCount} additive${additivesCount > 1 ? 's' : ''}` : ''}.`);
+  else if (nova === 3) parts.push(`It's a <strong>processed food</strong>.`);
+  else if (nova === 1) parts.push(`It's <strong>minimally processed</strong>.`);
+  else if (nova === 2) parts.push(`It's a <strong>culinary ingredient</strong>.`);
+  parts.push(`Overall: <strong>${lens.title.toLowerCase()}</strong>.`);
+  return parts.join(' ');
 }
 
+function buildSummaryWhole(f, lens, byKey) {
+  const parts = [];
+  const protein = byKey.protein ? byKey.protein.value : 0;
+  const fiber = byKey.fiber ? byKey.fiber.value : 0;
+  if (protein > 15) parts.push(`A <strong>high-protein</strong> food (${protein.toFixed(1)}g per 100g).`);
+  if (fiber > 6) parts.push(`<strong>Rich in fibre</strong> (${fiber.toFixed(1)}g per 100g).`);
+  const highVits = ['vit_a','vit_c','vit_d','vit_e','vit_k','b1','b2','b3','b6','folate','b12'].filter(k => byKey[k] && byKey[k].dv && (byKey[k].value / byKey[k].dv) >= 0.2);
+  const highMins = ['calcium','iron','magnesium','potassium','zinc','selenium'].filter(k => byKey[k] && byKey[k].dv && (byKey[k].value / byKey[k].dv) >= 0.2);
+  if (highVits.length) parts.push(`Excellent source of <strong>${highVits.slice(0,3).map(k => byKey[k].label).join(', ')}</strong>.`);
+  if (highMins.length) parts.push(`Excellent source of <strong>${highMins.slice(0,3).map(k => byKey[k].label).join(', ')}</strong>.`);
+  parts.push(`Overall: <strong>${lens.title.toLowerCase()}</strong>.`);
+  return parts.length ? parts.join(' ') : 'Browse the nutrient profile below for details.';
+}
+
+/* =====================================================
+   OFF NUTRIENT COLLECTORS
+   ===================================================== */
+function collectOFFNutrients(n, group) {
+  if (group === 'vitamin') {
+    return [
+      ['vitamin-a_100g',  'Vitamin A',   'mg', DV.vit_a_mcg / 1000],
+      ['vitamin-c_100g',  'Vitamin C',   'mg', DV.vit_c_mg],
+      ['vitamin-d_100g',  'Vitamin D',   'mcg', DV.vit_d_mcg / 1e6],
+      ['vitamin-e_100g',  'Vitamin E',   'mg', DV.vit_e_mg],
+      ['vitamin-k_100g',  'Vitamin K',   'mcg', DV.vit_k_mcg / 1e6],
+      ['vitamin-b1_100g', 'Thiamin (B1)','mg', DV.thiamin_mg],
+      ['vitamin-b2_100g', 'Riboflavin (B2)','mg', DV.riboflavin_mg],
+      ['vitamin-pp_100g', 'Niacin (B3)','mg', DV.niacin_mg],
+      ['vitamin-b6_100g', 'Vitamin B6', 'mg', DV.vit_b6_mg],
+      ['vitamin-b9_100g', 'Folate (B9)','mcg', DV.folate_mcg / 1e6],
+      ['vitamin-b12_100g','Vitamin B12','mcg', DV.vit_b12_mcg / 1e6],
+    ].filter(r => n[r[0]] != null).map(r => ({ label: r[1], value: r[2] === 'mcg' ? n[r[0]] * 1e6 : (r[2] === 'mg' ? n[r[0]] * 1000 : n[r[0]]), unit: r[2], dv: r[3] != null && r[2] !== 'mcg' ? r[3] : (r[2] === 'mcg' ? r[3] * 1e6 : null) }));
+  }
+  if (group === 'mineral') {
+    return [
+      ['calcium_100g',    'Calcium',    'mg', DV.calcium_mg],
+      ['iron_100g',       'Iron',       'mg', DV.iron_mg],
+      ['magnesium_100g',  'Magnesium',  'mg', DV.magnesium_mg],
+      ['phosphorus_100g', 'Phosphorus', 'mg', DV.phosphorus_mg],
+      ['potassium_100g',  'Potassium',  'mg', DV.potassium_mg],
+      ['zinc_100g',       'Zinc',       'mg', DV.zinc_mg],
+      ['copper_100g',     'Copper',     'mg', DV.copper_mg],
+      ['manganese_100g',  'Manganese',  'mg', DV.manganese_mg],
+      ['selenium_100g',   'Selenium',   'mcg', DV.selenium_mcg],
+      ['iodine_100g',     'Iodine',     'mcg', DV.iodine_mcg],
+    ].filter(r => n[r[0]] != null).map(r => ({ label: r[1], value: r[2] === 'mg' ? n[r[0]] * 1000 : n[r[0]] * 1e6, unit: r[2], dv: r[3] }));
+  }
+  if (group === 'fat-detail') {
+    return [
+      ['trans-fat_100g',            'Trans Fat',          'g', null],
+      ['monounsaturated-fat_100g',  'Monounsaturated Fat','g', null],
+      ['polyunsaturated-fat_100g',  'Polyunsaturated Fat','g', null],
+      ['omega-3-fat_100g',          'Omega-3 Fat',        'g', null],
+      ['omega-6-fat_100g',          'Omega-6 Fat',        'g', null],
+      ['omega-9-fat_100g',          'Omega-9 Fat',        'g', null],
+    ].filter(r => n[r[0]] != null).map(r => ({ label: r[1], value: n[r[0]], unit: r[2], dv: r[3] }));
+  }
+  return [];
+}
+
+/* =====================================================
+   MISC HELPERS
+   ===================================================== */
 function goBack() {
-  const q = searchInput.value.trim();
+  const q = searchInput.value.trim() || state.lastQuery;
   if (q) runSearch(q);
-  else {
-    output.innerHTML = '';
-    intro.style.display = 'grid';
-    suggestions.style.display = 'flex';
-  }
+  else { output.innerHTML = ''; intro.style.display = 'grid'; suggestions.style.display = 'flex'; }
 }
-
 function escapeHtml(str) {
   if (str == null) return '';
-  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  return String(str).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 }
-function truncate(str, n) {
-  if (!str) return '';
-  return str.length > n ? str.slice(0, n - 1) + '…' : str;
+function truncate(str, n) { if (!str) return ''; return str.length > n ? str.slice(0, n-1) + '…' : str; }
+function placeholderImg(kind) {
+  const txt = kind === 'plant' ? '🌱' : 'no image';
+  return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23ede6d6"/><text x="100" y="115" text-anchor="middle" fill="%23a89e8a" font-family="Georgia,serif" font-style="italic" font-size="' + (kind === 'plant' ? '52' : '14') + '">' + txt + '</text></svg>';
 }
-function placeholderImg() {
-  return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23ede6d6"/><text x="100" y="105" text-anchor="middle" fill="%23a89e8a" font-family="Georgia,serif" font-style="italic" font-size="14">no image</text></svg>';
-}
+
+/* INIT */
+loadApiKey();
 </script>
 </body>
 </html>
